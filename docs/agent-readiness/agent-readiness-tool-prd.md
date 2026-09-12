@@ -1,6 +1,10 @@
 # Docs Agent Readiness Toolkit Product Requirements Document
 
+This document defines the product requirements, boundaries, contracts, and staged delivery model for the toolkit.
+
 ## Document control
+
+The following metadata identifies the product and the status of this specification.
 
 - **Product:** Docs Agent Readiness Toolkit
 - **Internal product slug:** `docs-agent-readiness-toolkit`
@@ -91,6 +95,8 @@ The product will not:
 - execute commands found in fetched or source documentation.
 
 ## 5. Product boundary
+
+The product boundary separates responsibilities owned by the core from optional framework and evaluator integrations.
 
 ### Core
 
@@ -189,7 +195,11 @@ exact Fern presentation of the 23rd check is not present in the copied evidence.
 
 ## 7. Personas
 
+The following personas describe the problems, workflows, outcomes, barriers, and success criteria the product must support.
+
 ### Technical Writer
+
+Technical writers need evidence-backed findings that translate safely into editorial action.
 
 - **Problem:** A check reports a technical symptom without showing which page or what
   editorial action is safe.
@@ -203,6 +213,8 @@ exact Fern presentation of the 23rd check is not present in the copied evidence.
 
 ### Documentation Engineer
 
+Documentation engineers need reproducible diagnostics across source and generated representations.
+
 - **Problem:** Source and generated machine representations diverge.
 - **Workflow:** Audit source and build, group failures by component or generator cause,
   change export configuration, verify artifacts and live routes.
@@ -213,6 +225,8 @@ exact Fern presentation of the 23rd check is not present in the copied evidence.
   content.
 
 ### Developer Experience Engineer
+
+Developer experience engineers need to distinguish deterministic readiness from separately measured task outcomes.
 
 - **Problem:** Documentation is technically present but agents retrieve incomplete or
   expensive context.
@@ -225,6 +239,8 @@ exact Fern presentation of the 23rd check is not present in the copied evidence.
 
 ### Documentation Platform Owner
 
+Documentation platform owners need grouped evidence that supports framework-wide prevention without hiding route-level failures.
+
 - **Problem:** Platform changes can break many sites or routes at once.
 - **Workflow:** Run build and live audits over fixtures, inspect grouped adapter causes,
   release a fix, and compare compatible baselines.
@@ -234,6 +250,8 @@ exact Fern presentation of the 23rd check is not present in the copied evidence.
 
 ### Open-source Maintainer
 
+Open-source maintainers need a lightweight local workflow that does not depend on hosted infrastructure.
+
 - **Problem:** Limited time and infrastructure make hosted or AI-dependent tools costly.
 - **Workflow:** Run a local audit, commit a reviewed configuration and baseline, then
   use generic CI.
@@ -242,6 +260,8 @@ exact Fern presentation of the 23rd check is not present in the copied evidence.
 - **Success criteria:** Useful results without credentials, telemetry, or SaaS.
 
 ### CI and Platform Engineer
+
+CI and platform engineers need stable, auditable enforcement with bounded execution and explicit failure states.
 
 - **Problem:** CI needs stable exit behavior, bounded network activity, and low-noise
   annotations.
@@ -254,6 +274,8 @@ exact Fern presentation of the 23rd check is not present in the copied evidence.
   exit codes and audit evidence.
 
 ## 8. Core user journeys
+
+These journeys define the inputs, processing, results, artifacts, exits, and failure modes for core workflows.
 
 ### A. Audit a public documentation site
 
@@ -270,6 +292,8 @@ This is a Stage 3 journey. It is not implemented by the current prototype.
 
 ### B. Audit a local documentation repository
 
+This journey evaluates repository evidence within explicit local boundaries.
+
 - **Input:** Repository root, configuration, optional framework adapter.
 - **Processing:** Read allowed files, respect exclusions, inventory source, run source
   rules, collect revision and working-tree state.
@@ -280,6 +304,8 @@ This is a Stage 3 journey. It is not implemented by the current prototype.
   revision, or malformed config.
 
 ### C. Validate generated build artifacts
+
+This journey evaluates generated artifacts without asserting facts about a deployed site.
 
 - **Input:** Explicit build root, optional route manifest, source revision and build ID.
 - **Processing:** Prevent path escape, inventory files, parse indexes and representations,
@@ -308,6 +334,8 @@ collection.
 
 ### E. Run in CI
 
+This journey applies deterministic checks and explicit policy in an automated workflow.
+
 - **Input:** Pinned toolkit, checked-in config, source/build/live stage, optional
   baseline.
 - **Processing:** Validate config, run deterministic checks, compare baseline, evaluate
@@ -319,6 +347,8 @@ collection.
   evaluator, or incompatible baseline.
 
 ### F. Compare with a baseline
+
+This journey classifies finding-level changes only when the compared reports are compatible.
 
 - **Input:** Current report and reviewed content-addressed baseline report.
 - **Processing:** Validate schemas, modes, rules, configurations, target identities, and
@@ -332,6 +362,8 @@ collection.
 
 ### G. Integrate an external evaluator
 
+This journey preserves external evaluator identity and availability without merging its results into internal truth.
+
 - **Input:** Adapter configuration and evaluator target or raw result.
 - **Processing:** Stage 2 imports and parses recorded output safely. Evaluator invocation
   is deferred.
@@ -342,6 +374,8 @@ collection.
   mapping loss.
 
 ## 9. Functional requirements
+
+The functional requirements define target handling, deterministic rule execution, acquisition boundaries, diagnosis, and reporting.
 
 ### Target inventory
 
@@ -382,6 +416,8 @@ All renderers derive from one machine result. Human wording may improve without
 changing finding identity. Machine output must not contain terminal color codes.
 
 ## 10. Finding contract
+
+The finding contract defines the fields, statuses, identity, ordering, and compatibility behavior of machine results.
 
 ### Required fields
 
@@ -493,6 +529,8 @@ authenticity.
 
 ### Source provenance
 
+Source provenance records the repository state and configured source scope associated with evidence.
+
 - repository identifier;
 - revision;
 - clean, dirty, or unknown working-tree state;
@@ -500,6 +538,8 @@ authenticity.
 - source root and configured target-set digest.
 
 ### Build provenance
+
+Build provenance records the identity, source relationship, and relevant properties of generated artifacts.
 
 - build identifier and timestamp;
 - producing source revision;
@@ -510,6 +550,8 @@ authenticity.
 
 ### Live provenance
 
+Live provenance records the deployment target, observation window, response evidence, and identity verification state.
+
 - requested and final deployment URL;
 - deployment identifier where independently available;
 - crawl start and end;
@@ -518,6 +560,8 @@ authenticity.
 - expected source/build identity and whether it could be verified.
 
 ### Evaluation provenance
+
+Evaluation provenance records the versions, configuration, limits, and raw-result identity used for evaluation.
 
 - toolkit and rule versions;
 - configuration digest;
@@ -608,6 +652,8 @@ External evaluator unavailability is advisory by default. Users may explicitly r
 it, which permits exit 4.
 
 ## 14. Reports
+
+The product renders distinct report views from the same canonical machine result.
 
 ### Human report
 
@@ -758,6 +804,8 @@ These names remain prototype interfaces, not a frozen public CLI.
 
 ### Arguments and defaults
 
+These defaults constrain prototype input handling and keep human and machine output behavior explicit.
+
 - No public crawl or URL input exists in the prototype.
 - Source defaults to the current directory only when source mode is explicit.
 - Build root is always explicit.
@@ -780,6 +828,8 @@ security-sensitive acquisition subsystem. Stage 3 stays blocked until the docume
 network, resource, parser, filesystem, and execution matrix is executable and approved.
 
 ### Required Stage 3 controls
+
+Stage 3 must enforce the following network, resource, parsing, and output controls before live acquisition is approved.
 
 - Allow only HTTP and HTTPS.
 - Reject URL user information and ambiguous host syntax.
@@ -808,6 +858,8 @@ network, resource, parser, filesystem, and execution matrix is executable and ap
 
 ### Filesystem controls
 
+Local collection must remain within explicit roots and bounded resource limits without executing repository content.
+
 - Resolve and enforce explicit source and build roots.
 - Reject path traversal and symlink escape.
 - Do not scan `.env`, credential, key, or ignored private-context patterns by default.
@@ -832,6 +884,8 @@ Source content, build artifacts, fetched content, reports, and baselines remain 
 unless the user explicitly chooses an integration that transmits them.
 
 ### Report minimization
+
+Reports minimize retained content while preserving enough bounded evidence for diagnosis.
 
 - Store hashes, measurements, and locations instead of full bodies by default.
 - Store bounded snippets only when needed and enabled.
@@ -888,6 +942,8 @@ The toolkit does not lead with another score or crawler. This sequence is canoni
 
 ### MVP-0: Evidence foundation
 
+MVP-0 establishes the evidence, identity, provenance, and replay foundation of the prototype.
+
 - **Purpose:** Prove evidence, identity, provenance, and offline replay.
 - **Scope:** SOURCE and BUILD evidence bundles, deterministic replay, trust and the four
   evidence properties, canonical findings, one explicitly supplied source-to-build
@@ -900,6 +956,8 @@ The toolkit does not lead with another score or crawler. This sequence is canoni
   identity.
 
 ### MVP-1: Regression control
+
+MVP-1 adds compatible historical comparison and trusted policy enforcement to the evidence foundation.
 
 - **Purpose:** Compare compatible history and enforce explicit policy.
 - **Scope:** Baseline creation, mechanical compatibility, five regression states,
@@ -915,12 +973,16 @@ includes Stage 2 recorded AFDocs import. It does not include Stage 3 HTTP acquis
 
 ### Stage 2: Recorded external evaluator import
 
+Stage 2 demonstrates interoperability through recorded evaluator output without invoking the evaluator.
+
 - **Purpose:** Prove the product works alongside AFDocs.
 - **Scope:** Import recorded AFDocs JSON, retain raw bytes and external score, and
   normalize supported versions under an independently versioned adapter.
 - **Out of scope:** Installing, spawning, or reimplementing AFDocs.
 
 ### Stage 3: Bounded live acquisition
+
+Stage 3 introduces a separate bounded collector only after its security requirements are executable and approved.
 
 - **Purpose:** Collect live evidence for offline analysis.
 - **Scope:** A separate HTTP collector only after the security matrix is executable and
@@ -935,7 +997,11 @@ validation support further investment.
 
 ## 24. Test strategy
 
+The test strategy covers deterministic behavior, hostile inputs, compatibility, security boundaries, and diagnostic localization.
+
 ### Unit tests
+
+Unit tests verify isolated parsing, normalization, configuration, identity, comparison, and output behavior.
 
 - Parsers and size limits.
 - URL normalization, identity, redirects, and policy.
@@ -946,6 +1012,8 @@ validation support further investment.
 - Output sanitization and redaction.
 
 ### Fixtures
+
+Fixtures provide bounded examples of valid, malformed, missing, hostile, and divergent documentation evidence.
 
 - Valid, missing, and malformed `llms.txt`.
 - Malformed and nested sitemaps.
@@ -963,6 +1031,8 @@ validation support further investment.
 
 ### Integration tests
 
+Integration tests verify behavior across controlled collectors, artifact trees, identity joins, and recorded integrations.
+
 - In-process hostile HTTP fixture server.
 - Local build-artifact trees with symlinks and path escapes.
 - Source/build/live identity joins.
@@ -970,6 +1040,8 @@ validation support further investment.
 - External evaluator recorded fixtures without live service dependency.
 
 ### Security tests
+
+Security tests exercise network, parser, resource, and output boundaries against named attack cases.
 
 - Localhost and private network forms for IPv4 and IPv6.
 - Link-local and metadata targets.
@@ -985,6 +1057,8 @@ validation support further investment.
 
 ### Regression tests
 
+Regression tests verify comparison behavior across finding transitions and compatibility changes.
+
 - Baseline/current transitions.
 - Rule and schema version changes.
 - Threshold and configuration changes.
@@ -998,6 +1072,8 @@ Stable JSON, human text, Markdown, baseline diff, and annotation fixtures. Golde
 normalize only declared volatile run fields.
 
 ### Six canonical prototype canaries
+
+These canaries define the minimum end-to-end behaviors the prototype must preserve.
 
 1. SOURCE page present and mapped BUILD artifact absent produces source-to-build drift.
 2. BUILD representation A and captured LIVE representation B produces build-to-live
@@ -1025,6 +1101,8 @@ the diagnosis offline.
 
 ## 25. Threat and failure matrix
 
+The matrix maps representative failures to detection, evidence, severity, impact, remediation, CI behavior, and tests.
+
 | Failure | Detection | Evidence | Severity | User impact | Remediation | CI behavior | Test |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Missing `llms.txt` | Candidate path rule | Path/status | High | Poor discovery | Enable existing generator or route | Policy-based | Missing fixture |
@@ -1050,6 +1128,8 @@ the diagnosis offline.
 
 ## 26. Open-source governance
 
+Open-source governance covers licensing, contributions, security ownership, releases, compatibility, and specification evolution.
+
 ### License and dependencies
 
 The project remains MIT. Dependency adoption requires:
@@ -1063,6 +1143,8 @@ The project remains MIT. Dependency adoption requires:
 MIT project licensing does not prove dependency compatibility.
 
 ### Contribution model
+
+Contributions require public process, review, tests, and disclosure appropriate to the project policy.
 
 - Public contribution guide and code of conduct before accepting implementation PRs.
 - Design changes begin with an issue or proposal for schema, rule, or adapter behavior.
@@ -1128,6 +1210,8 @@ normalization.
 
 ## 28. Risks and mitigations
 
+The principal risks concern product overlap, scope, confidence, security, maintenance, remediation, and baseline use.
+
 ### Product overlap
 
 AFDocs and Vercel already provide broad live audits. Mitigation: cut duplicate scoring
@@ -1185,6 +1269,8 @@ measurement.
 
 ## 30. Open questions
 
+The following unresolved items retain their existing decision, evidence, stakeholder, verification, or scope status.
+
 - `DECISION_REQUIRED`: Final package and executable names.
 - `DECISION_REQUIRED`: Implementation language and supported runtimes.
 - `DECISION_REQUIRED`: Exact post-prototype Tier 1 rule cut.
@@ -1209,6 +1295,8 @@ measurement.
   Phase 2.
 
 ## Rootstock lessons mapped to product requirements
+
+The following case-study lessons connect observed Rootstock evidence to generalized engineering principles and product requirements.
 
 | Rootstock lesson | Generalized problem | Engineering principle | Product requirement | Evidence | Standardization |
 | --- | --- | --- | --- | --- | --- |

@@ -1,5 +1,7 @@
 # Docs Agent Readiness Toolkit Agent Guide
 
+This guide defines the repository boundaries and contribution safeguards for agents.
+
 ## Scope
 
 This guide applies to contributors and coding agents working in the public repository.
@@ -13,7 +15,10 @@ explicitly reviewed scope change.
 
 ## Public and private material
 
-- Never add private research, internal handoffs, captured deployment material,
+Public contributions must preserve the boundary between publishable toolkit material
+and private evidence.
+
+- Never add private research, non-public project material, captured deployment material,
   participant data, local agent workspaces, credentials, or private Rootstock evidence.
 - Rootstock may be discussed as a historical case study. Do not treat its framework,
   plugins, paths, thresholds, or evaluator behavior as neutral defaults.
@@ -22,6 +27,8 @@ explicitly reviewed scope change.
 - Do not modify frozen historical evidence to make a generic quality gate pass.
 
 ## Evidence and compatibility
+
+Changes must preserve the evidence model and its explicit compatibility semantics.
 
 - Keep `SOURCE`, `BUILD`, `LIVE`, `RUNTIME_OBSERVATION`, and `TASK_EVALUATION`
   distinct.
@@ -37,6 +44,9 @@ explicitly reviewed scope change.
 
 ## Security boundaries
 
+Implementation work must maintain the prototype's offline and non-executing security
+boundary.
+
 - The analyzer must remain network-free and must not execute repository code, build
   commands, hooks, examples, or dynamic plugins.
 - Treat all imported Markdown, HTML, JSON, paths, and report fields as untrusted.
@@ -46,6 +56,9 @@ explicitly reviewed scope change.
   [`docs/phase3/live-acquisition-security-gate.md`](docs/phase3/live-acquisition-security-gate.md).
 
 ## Changes and validation
+
+Validation should match the affected contracts and remain reproducible from public
+material.
 
 - Update schemas, tests, fixtures, goldens, documentation, and changelog entries when a
   user-visible contract changes.
@@ -57,6 +70,9 @@ explicitly reviewed scope change.
 - Do not hide new failures behind exclusions intended for private or frozen material.
 
 ## Git and attribution
+
+Repository history must retain human ownership and require explicit authorization for
+publication actions.
 
 - Commits must use the human contributor's configured identity.
 - Do not use an AI or bot identity as author, committer, or co-author.

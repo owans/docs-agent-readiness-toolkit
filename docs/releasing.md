@@ -1,5 +1,8 @@
 # Release Process
 
+This document records the current release status and the owner-controlled pre-release
+procedure.
+
 ## Current state
 
 The package is private, versioned `0.0.0`, and has no public release, tag, or npm

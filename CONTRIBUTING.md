@@ -6,6 +6,8 @@ model without expanding the product boundary prematurely.
 
 ## Development setup
 
+Local development requires the supported Node.js runtime and locked dependencies.
+
 Requirements:
 
 - Node.js 22 or newer;
@@ -21,6 +23,9 @@ Use `npm run format` to format supported source and data files. `npm run check` 
 formatting, lint, strict TypeScript, tests, documentation, and the build.
 
 ## Change expectations
+
+Contributions must stay within the current prototype scope and preserve its safety
+properties.
 
 - Keep the analyzer network-free and deterministic.
 - Do not execute repository code, builds, hooks, documentation examples, or dynamic
@@ -60,6 +65,9 @@ Local documentation links must resolve. Official external links that reject auto
 clients may be documented rather than replaced when they are valid in a browser.
 
 ## Commits and pull requests
+
+Submitted changes must remain reviewable, attributable to the human contributor, and
+limited in scope.
 
 - Use your own configured human Git identity.
 - Do not use an AI or bot identity as author, committer, or co-author.

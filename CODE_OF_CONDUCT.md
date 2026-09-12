@@ -1,5 +1,7 @@
 # Contributor Covenant Code of Conduct
 
+This code establishes the behavior expected throughout the project community.
+
 ## Our pledge
 
 We as members, contributors, and leaders pledge to make participation in our community

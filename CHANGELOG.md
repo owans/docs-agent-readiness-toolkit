@@ -7,7 +7,12 @@ released software will use [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+This section records changes that have not yet been included in a public release.
+
 ### Added
+
+The unreleased work introduces the following public project material and prototype
+capabilities.
 
 - Public methodology, specifications, rule catalog, and decision record.
 - Phase 3 evidence, deterministic replay, baseline comparison, policy, and reporting
@@ -18,22 +23,32 @@ released software will use [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Changed
 
+The unreleased work changes the organization of public and private project material.
+
 - Separated the public reusable toolkit from the private case-study and research
   workspace.
 
 ### Deprecated
 
+No features or interfaces are currently deprecated.
+
 - Nothing.
 
 ### Removed
+
+No features or interfaces are currently removed.
 
 - Nothing.
 
 ### Fixed
 
+No fixes are currently recorded.
+
 - Nothing.
 
 ### Security
+
+The unreleased security documentation clarifies the prototype's operating boundary.
 
 - Documented the network-free analyzer boundary and the blocking live-acquisition
   security gate.

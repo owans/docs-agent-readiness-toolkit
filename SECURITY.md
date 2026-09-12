@@ -1,5 +1,8 @@
 # Security Policy
 
+This policy describes the prototype's support status, reporting process, and security
+boundaries.
+
 ## Supported versions
 
 The project has no public software release and no formally supported version line. The
@@ -25,6 +28,8 @@ The maintainer will acknowledge, investigate, coordinate remediation, and agree 
 disclosure with the reporter. No fixed response or resolution time is promised.
 
 ## Security-sensitive areas
+
+Security review should focus on the trust boundaries and input surfaces listed below.
 
 - evidence and configuration parsing;
 - filesystem path resolution and symlink handling;

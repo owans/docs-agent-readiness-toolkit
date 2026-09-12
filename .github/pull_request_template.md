@@ -1,10 +1,19 @@
 # Pull Request
 
+Use this template to explain the change, its validation, and its effect on toolkit
+boundaries.
+
 ## Summary
+
+Summarize the change and its user-visible outcome.
 
 ## Motivation and scope
 
+Explain why the change is needed and what remains outside its scope.
+
 ## Validation
+
+Record the checks completed for this change and leave inapplicable checks unselected.
 
 - [ ] `npm run check`
 - [ ] `npm audit`
@@ -12,6 +21,9 @@
 - [ ] Security-focused tests added or updated when applicable
 
 ## Impact review
+
+Confirm the change preserves the repository's compatibility, security, and publication
+boundaries.
 
 - [ ] I documented user-visible behavior in `CHANGELOG.md`, or this change has no changelog impact.
 - [ ] I reviewed schema, rule, identity, parser, canonicalizer, evaluator, baseline, and regression compatibility.

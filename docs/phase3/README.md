@@ -1,5 +1,8 @@
 # Phase 3 Evidence Replay Prototype
 
+This guide describes the implemented prototype, its deterministic contracts, and its
+deliberately limited scope.
+
 ## Status
 
 The repository contains a deliberately small TypeScript prototype. It proves the
@@ -22,6 +25,9 @@ Implemented:
 - six canaries, localization fixtures, golden outputs, and offline security tests.
 
 ## Architecture
+
+The prototype moves explicit local or recorded inputs through an offline evidence and
+analysis pipeline.
 
 ```text
 EXPLICIT LOCAL COLLECTOR OR RECORDED IMPORT
@@ -46,6 +52,9 @@ hooks, build commands, documentation examples, or dynamic adapters.
 
 ## Toolchain
 
+The prototype uses a small, pinned TypeScript toolchain for deterministic development
+and verification.
+
 - Node.js 22 or newer
 - TypeScript with strict checking
 - npm with a committed lockfile
@@ -59,6 +68,9 @@ freeze a public package or executable name.
 
 ## Install and verify
 
+Install the locked dependencies and run the repository's prototype checks with these
+commands.
+
 ```bash
 npm ci
 npm run check
@@ -68,6 +80,9 @@ npm run check
 TypeScript build.
 
 ## Minimal local example
+
+The following commands create and analyze a bundle using only the committed local
+example inputs.
 
 ```bash
 npm run build
@@ -237,6 +252,9 @@ authenticity. Availability alone does not authenticate the producer claim.
 
 ## Six canaries
 
+The acceptance set fixes six behaviors across evidence boundaries, identity, and
+baseline comparison.
+
 1. SOURCE present and BUILD absent localizes a BUILD boundary defect.
 2. BUILD A and captured LIVE B localize drift to LIVE without HTTP.
 3. Different source/build paths pass through an explicit valid mapping while the
@@ -250,6 +268,8 @@ Separate localization fixtures cover source, build, captured live, and imported 
 evaluator boundaries.
 
 ## Deliberately deferred
+
+The following capabilities remain outside the authorized prototype scope.
 
 - live HTTP acquisition and crawling;
 - framework adapters;

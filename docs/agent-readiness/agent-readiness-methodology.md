@@ -1,5 +1,8 @@
 # Docs Agent Readiness Toolkit: Agent Readiness Engineering Methodology
 
+This methodology defines the evidence boundaries, assessment workflow, and operating
+model for agent-readiness engineering.
+
 ## Document status
 
 This Phase 2 methodology for `docs-agent-readiness-toolkit` defines a reusable,
@@ -101,6 +104,9 @@ relationships from similar paths. Identity results are
 independent attestation establishes it.
 
 ### Canonical implementation sequence
+
+The implementation sequence separates the deterministic core from later integrations
+and gated capabilities.
 
 - **MVP-0:** source and build evidence bundles, deterministic replay, provenance and
   trust, canonical findings, one explicit source-to-build join, expected-live identity
@@ -659,6 +665,9 @@ Open evidence gaps:
 - `OUT_OF_SCOPE`: Health Dashboard implementation.
 
 ## Rootstock lessons mapped to generalized requirements
+
+The mapping below preserves the case-study evidence while stating each reusable
+requirement independently.
 
 | Rootstock lesson | Generalized problem | Engineering principle | Product requirement | Evidence | Standardization |
 | --- | --- | --- | --- | --- | --- |

@@ -1,5 +1,8 @@
 # Practitioner Validation Protocol
 
+This protocol defines how practitioners will evaluate the prototype's evidence,
+localization, and replay claims.
+
 ## Status
 
 This protocol defines practitioner validation for the evidence/replay prototype. Real

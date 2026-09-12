@@ -1,5 +1,8 @@
 # Live Acquisition Security Gate
 
+This gate defines the controls and evidence required before any Stage 3 HTTP collection
+work can begin.
+
 ## Status
 
 This is the blocking security specification for Stage 3 of
@@ -12,6 +15,9 @@ approved. Passing it will support only the named controls. It will not establish
 general "security clean" claim.
 
 ## Architecture invariant
+
+The architecture keeps collection separate from offline analysis in both the current
+and future flows.
 
 ```text
 LOCAL COLLECTORS
@@ -54,6 +60,9 @@ Before implementation:
 7. A security review records residual risk and supported deployment assumptions.
 
 ## Required matrix
+
+The matrix names every required threat control, executable test, and current gate
+status.
 
 | Area | Threat or failure | Required control | Required test | Current status |
 | --- | --- | --- | --- | --- |

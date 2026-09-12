@@ -1,23 +1,38 @@
 # Docs Agent Readiness Toolkit
 
-An open-source engineering toolkit for tracing, comparing, and enforcing documentation
+An open-source engineering toolkit for analyzing, comparing, and enforcing documentation
 evidence for machine consumers.
 
-## Status
+Documentation can look correct to a human while remaining difficult for automated
+systems to discover, retrieve, parse, or use reliably. The toolkit helps writers,
+documentation engineers, DevEx teams, and platform engineers inspect those conditions
+using explicit evidence, deterministic analysis, baseline comparison, and CI policy.
 
-This repository contains a deliberately small Phase 3 prototype. It is pre-validation,
-not production ready, and not a complete agent-readiness auditor.
+## What it does
 
-- Phase 1 historical reconstruction: complete
-- Phase 2 generalisation: complete
-- Phase 3 evidence, replay, baseline, and policy prototype: implemented
-- Practitioner validation: `NOT_RUN`
-- Live acquisition: blocked by the
-  [security gate](docs/phase3/live-acquisition-security-gate.md)
+The current implementation provides a local evidence and analysis workflow:
 
-The next project gate is real practitioner validation. The project does not claim
-universal agent success, live-site coverage, complete framework coverage, or content
-correctness.
+- collects explicit local source and build files;
+- imports recorded evidence, including captured live bytes;
+- stores content-addressed evidence bundles;
+- analyzes bundles deterministically without network access;
+- validates explicit source-to-build and build-to-recorded-live mappings;
+- emits canonical JSON and concise Markdown reports;
+- records evidence completeness by mode;
+- compares compatible reports using stable finding identities;
+- applies trusted-base policy for CI;
+- imports recorded AFDocs 0.18.7 results without executing AFDocs.
+
+## Current scope
+
+The toolkit focuses on deterministic analysis of local and recorded evidence. It does
+not crawl live websites, perform live HTTP acquisition, execute documentation builds,
+run browsers, load dynamic plugins, call an LLM, evaluate agent tasks, apply automatic
+fixes, or provide hosted monitoring.
+
+It is an early implementation, not a complete agent-readiness auditor or a
+production-readiness claim. It does not claim universal agent success, factual
+correctness, workflow completion, live-site coverage, or complete framework coverage.
 
 ## Why it exists
 
@@ -33,25 +48,10 @@ Its current focus is evidence and diagnosis: preserve what was observed, identif
 responsible boundary, replay analysis offline, and compare compatible findings over
 time.
 
-## What the prototype does
-
-- collects explicit local source and build files;
-- imports recorded evidence, including captured live bytes;
-- stores content-addressed evidence bundles;
-- analyzes bundles deterministically without network access;
-- validates explicit source-to-build and build-to-recorded-live mappings;
-- emits canonical JSON and concise Markdown reports;
-- records evidence completeness by mode;
-- compares compatible reports using stable finding identities;
-- applies trusted-base policy for CI;
-- imports recorded AFDocs 0.18.7 results without executing AFDocs.
-
-It does not crawl sites, execute documentation builds, run browsers, load dynamic
-plugins, call an LLM, evaluate agent tasks, apply fixes, or provide hosted monitoring.
-
 ## Core model
 
-Evidence modes remain separate:
+The toolkit keeps evidence, trust, identity, findings, and policy separate so that one
+signal does not stand in for another. Evidence modes remain distinct:
 
 - `SOURCE`
 - `BUILD`
@@ -95,7 +95,8 @@ Evidence completeness is recorded independently for each mode and external evide
 
 ## Quick start
 
-Requirements: Node.js 22 and npm.
+Install Node.js 22.12.0 or later and npm, then build the toolkit and create a bundle
+from the included minimal example:
 
 ```bash
 npm ci
@@ -115,12 +116,15 @@ node dist/cli.js analyze \
 The collector reads only the files declared in the configuration. The analyzer replays
 the resulting bundle without HTTP, DNS, browser, or arbitrary command execution.
 
-See the [Phase 3 prototype guide](docs/phase3/README.md) for bundle, report, baseline,
+See the [implementation guide](docs/phase3/README.md) for bundle, report, baseline,
 policy, and exit-code details. Versioned contracts are under [`schemas/v1/`](schemas/v1/).
 The checked-in policy example is
 [`.docs-agent-readiness/policy.json`](.docs-agent-readiness/policy.json).
 
 ## Repository structure
+
+The repository separates implementation, versioned contracts, deterministic fixtures,
+tests, examples, and public documentation:
 
 ```text
 docs/                    Public specifications and prototype documentation
@@ -133,10 +137,9 @@ examples/minimal/        Minimal local collection example
 .github/                 Contribution and CI configuration
 ```
 
-The public repository does not distribute the private Rootstock research corpus,
-captured artifacts, internal handoffs, or local agent workspace files. Rootstock
-informed the methodology as a case study; its implementation details and thresholds
-are not toolkit defaults.
+The public distribution uses generalized examples and deterministic fixtures. Private
+case-study evidence and captured artifacts are not included. Case-study implementation
+details and thresholds are not toolkit defaults.
 
 ## AFDocs
 
@@ -160,6 +163,9 @@ Report vulnerabilities through the process in [`SECURITY.md`](SECURITY.md). Do n
 sensitive vulnerability details in a public issue.
 
 ## Documentation and roadmap
+
+Use these documents for the technical model, product requirements, current boundaries,
+contribution process, and planned direction:
 
 - [Documentation index](docs/README.md)
 - [Methodology](docs/agent-readiness/agent-readiness-methodology.md)
@@ -185,6 +191,8 @@ release, or stable executable name is implied. See [`docs/releasing.md`](docs/re
 for the future manual pre-release process.
 
 ## License and repository
+
+The toolkit is available under the MIT License in its canonical GitHub repository:
 
 - Repository:
   [owans/docs-agent-readiness-toolkit](https://github.com/owans/docs-agent-readiness-toolkit)

@@ -5,6 +5,8 @@ or service-level commitment is provided.
 
 ## Choose a channel
 
+Select the channel that matches the type and sensitivity of the request.
+
 - **Bug or unexpected behavior:** open a
   [bug report](https://github.com/owans/docs-agent-readiness-toolkit/issues/new?template=bug_report.yml).
 - **Documentation problem:** open a

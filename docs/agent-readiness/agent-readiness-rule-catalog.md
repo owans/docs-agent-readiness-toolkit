@@ -1,5 +1,7 @@
 # Docs Agent Readiness Toolkit Rule Catalog
 
+This catalog defines the toolkit's proposed readiness rules and integration boundaries.
+
 ## Document status
 
 This Phase 2 catalog for `docs-agent-readiness-toolkit` specifies the wider rule
@@ -100,7 +102,11 @@ implemented merely because they are specified.
 
 ## Proposed deterministic rule inventory
 
+This inventory specifies deterministic checks grouped by readiness concern.
+
 ### DART-DISC-001: Discovery index availability
+
+This rule checks whether a configured machine-readable index is available and non-empty.
 
 - **Category and severity:** Discovery, `HIGH`.
 - **Purpose:** Determine whether a configured machine-readable index is present.
@@ -122,6 +128,8 @@ implemented merely because they are specified.
 
 ### DART-DISC-002: Discovery index parseability
 
+This rule checks whether a declared index parses under its configured format and version.
+
 - **Category and severity:** Discovery, `HIGH`.
 - **Purpose:** Verify that a declared index conforms to its configured format.
 - **Input and applicability:** Index bytes plus selected format/version.
@@ -137,6 +145,8 @@ implemented merely because they are specified.
 - **Notes:** Prefer integration if a candidate parser meets security and stability needs.
 
 ### DART-DISC-003: Discovery link resolution
+
+This rule checks whether same-scope links in a parsed index resolve to usable targets.
 
 - **Category and severity:** Discovery, `HIGH`.
 - **Purpose:** Verify that same-scope index links resolve to usable targets.
@@ -156,6 +166,8 @@ implemented merely because they are specified.
 
 ### DART-DISC-004: Discovery set coverage
 
+This rule checks index membership against the declared documentation route set and exclusions.
+
 - **Category and severity:** Discovery, `MEDIUM`.
 - **Purpose:** Compare the declared documentation set with index membership.
 - **Input and applicability:** Normalized source/build/live route set, index links, and
@@ -174,6 +186,8 @@ implemented merely because they are specified.
 
 ### DART-DISC-005: Page discovery signal
 
+This rule checks whether a page declares a relevant index or machine representation.
+
 - **Category and severity:** Discovery, `MEDIUM`.
 - **Purpose:** Determine whether a page advertises a relevant index or machine form.
 - **Input and applicability:** Build HTML/Markdown or live responses.
@@ -190,6 +204,8 @@ implemented merely because they are specified.
 - **Notes:** An in-body mention is not automatically equivalent to a declared relation.
 
 ### DART-DISC-006: Sitemap availability and parseability
+
+This rule checks whether a required sitemap is available, bounded, safe to parse, and well-formed.
 
 - **Category and severity:** Discovery, `MEDIUM`.
 - **Purpose:** Establish a usable declared sitemap set.
@@ -209,6 +225,8 @@ implemented merely because they are specified.
 
 ### DART-DISC-007: Robots and discovery interaction
 
+This rule checks for conflicts between required discovery resources and applicable robots policy.
+
 - **Category and severity:** Access, `MEDIUM`.
 - **Purpose:** Detect obvious conflicts between declared discovery resources and robots
   policy.
@@ -226,6 +244,8 @@ implemented merely because they are specified.
 - **Notes:** Robots policy does not prove indexing or compliance by agents.
 
 ### DART-ACCESS-001: Public accessibility
+
+This rule checks whether targets declared public are reachable without unexpected access barriers.
 
 - **Category and severity:** Access, `HIGH`.
 - **Purpose:** Determine whether targets declared public are reachable without an
@@ -248,6 +268,8 @@ implemented merely because they are specified.
 
 ### DART-ACCESS-002: Alternative access declaration
 
+This rule checks whether an intentionally gated site provides its required machine-access alternative.
+
 - **Category and severity:** Access, `MEDIUM`.
 - **Purpose:** Verify a declared machine-access path when primary documentation is
   intentionally gated.
@@ -268,6 +290,8 @@ implemented merely because they are specified.
 
 ### DART-REPR-001: Markdown artifact availability
 
+This rule checks whether each target route has its declared non-empty Markdown representation.
+
 - **Category and severity:** Representation, `HIGH`.
 - **Purpose:** Verify a declared machine representation for each target route.
 - **Input and applicability:** Route inventory and build artifacts or live endpoints.
@@ -284,6 +308,8 @@ implemented merely because they are specified.
 
 ### DART-REPR-002: Markdown suffix route
 
+This rule checks whether configured `.md` routes return usable Markdown artifacts or responses.
+
 - **Category and severity:** Representation, `MEDIUM`.
 - **Purpose:** Verify configured `.md` route behavior.
 - **Input and applicability:** Allowed live page URLs or build route map.
@@ -299,6 +325,8 @@ implemented merely because they are specified.
 - **Notes:** A suffix route is optional if project policy uses another stable mechanism.
 
 ### DART-REPR-003: Content negotiation
+
+This rule checks whether explicit Markdown negotiation works without breaking default HTML or caches.
 
 - **Category and severity:** Representation, `MEDIUM`.
 - **Purpose:** Verify that an explicit Markdown `Accept` request receives the declared
@@ -318,6 +346,8 @@ implemented merely because they are specified.
 
 ### DART-REPR-004: Representation content type
 
+This rule checks whether a machine route serves content matching its declared representation type.
+
 - **Category and severity:** Representation, `HIGH`.
 - **Purpose:** Detect HTML shells or other content served from machine routes.
 - **Input and applicability:** Build metadata or live response.
@@ -334,6 +364,8 @@ implemented merely because they are specified.
 - **Notes:** Never execute returned scripts.
 
 ### DART-REPR-005: HTML and machine-representation parity
+
+This rule checks paired HTML and machine representations for material semantic content differences.
 
 - **Category and severity:** Representation, `HIGH`.
 - **Purpose:** Detect material missing or duplicated semantic content.
@@ -353,6 +385,8 @@ implemented merely because they are specified.
 
 ### DART-REPR-006: Component representation declaration
 
+This rule checks whether adapter-known lossy source components have a declared export strategy.
+
 - **Category and severity:** Structure, `MEDIUM`.
 - **Purpose:** Identify source components that require a declared export strategy.
 - **Input and applicability:** Source mode through a framework adapter.
@@ -368,6 +402,8 @@ implemented merely because they are specified.
 - **Notes:** Not in initial MVP core.
 
 ### DART-SIZE-001: Raw HTML response size
+
+This rule checks raw HTML delivery size against the configured project budget.
 
 - **Category and severity:** Retrieval efficiency, `LOW`.
 - **Purpose:** Measure the HTML bytes delivered before extraction or rendering.
@@ -385,6 +421,8 @@ implemented merely because they are specified.
 
 ### DART-SIZE-002: Extracted HTML content size
 
+This rule checks extracted inert HTML content size against the configured project budget.
+
 - **Category and severity:** Retrieval efficiency, `MEDIUM`.
 - **Purpose:** Measure the text representation derived from HTML.
 - **Input and applicability:** Bounded static or rendered HTML under configured parser.
@@ -400,6 +438,8 @@ implemented merely because they are specified.
 - **Notes:** Rendered browser mode has a larger attack and resource surface.
 
 ### DART-SIZE-003: Markdown size
+
+This rule checks Markdown artifact or response size against the configured project budget.
 
 - **Category and severity:** Retrieval efficiency, `MEDIUM`.
 - **Purpose:** Measure a Markdown artifact or response independently.
@@ -418,6 +458,8 @@ implemented merely because they are specified.
 
 ### DART-SIZE-004: Agent-consumed representation size
 
+This rule checks the representation selected by a declared consumer profile against its size budget.
+
 - **Category and severity:** Retrieval efficiency, `MEDIUM`.
 - **Purpose:** Measure the representation selected by a declared consumer profile.
 - **Input and applicability:** Runtime observation or deterministic request profile.
@@ -433,6 +475,8 @@ implemented merely because they are specified.
 - **Notes:** Deterministic request simulation is not proof of every actual agent.
 
 ### DART-SIZE-005: Content-start position
+
+This rule checks how much of a representation appears before its meaningful page content.
 
 - **Category and severity:** Retrieval efficiency, `MEDIUM`.
 - **Purpose:** Measure how much representation precedes meaningful page content.
@@ -450,6 +494,8 @@ implemented merely because they are specified.
 
 ### DART-SIZE-006: Discovery index size
 
+This rule checks each discovery index independently against configured project size budgets.
+
 - **Category and severity:** Retrieval efficiency, `MEDIUM`.
 - **Purpose:** Measure each index separately from page payloads.
 - **Input and applicability:** Build or live index.
@@ -465,6 +511,8 @@ implemented merely because they are specified.
 - **Notes:** Rootstock's 50K guard is not a default.
 
 ### DART-STR-001: Heading structure
+
+This rule checks for missing primary headings, invalid heading jumps, and empty sections.
 
 - **Category and severity:** Structure, `LOW`.
 - **Purpose:** Detect missing primary headings, invalid jumps, and empty sections.
@@ -482,6 +530,8 @@ implemented merely because they are specified.
 
 ### DART-STR-002: Code-fence validity
 
+This rule checks whether Markdown code fences are balanced and parseable.
+
 - **Category and severity:** Structure, `MEDIUM`.
 - **Purpose:** Ensure Markdown code fences are balanced and parseable.
 - **Input and applicability:** Source or generated Markdown.
@@ -498,6 +548,8 @@ implemented merely because they are specified.
 
 ### DART-STR-003: Hidden-state serialization
 
+This rule checks paired representations for missing or excessively duplicated tab and accordion states.
+
 - **Category and severity:** Structure, `HIGH`.
 - **Purpose:** Detect missing or explosively duplicated tab and accordion content.
 - **Input and applicability:** Paired HTML/Markdown, optionally adapter source evidence.
@@ -513,6 +565,8 @@ implemented merely because they are specified.
 - **Notes:** Accordions and tabs remain separate evidence even if one policy covers both.
 
 ### DART-STR-004: Content order, duplication, and omission
+
+This rule checks paired semantic block sequences for material reordering, duplication, or omission.
 
 - **Category and severity:** Structure, `MEDIUM`.
 - **Purpose:** Detect material reordering, duplication, or omission in a paired machine
@@ -533,6 +587,8 @@ implemented merely because they are specified.
 
 ### DART-URL-001: Redirect integrity
 
+This rule checks redirect chains for loops, excessive hops, disallowed hosts, and unsafe targets.
+
 - **Category and severity:** URL integrity, `HIGH`.
 - **Purpose:** Detect loops, excessive hops, disallowed host changes, and unsafe targets.
 - **Input and applicability:** Allowed live URL set.
@@ -548,6 +604,8 @@ implemented merely because they are specified.
 - **Notes:** Safety validation precedes request execution.
 
 ### DART-URL-002: Soft 404
+
+This rule checks whether invalid live routes return error content with a misleading success status.
 
 - **Category and severity:** URL integrity, `HIGH`.
 - **Purpose:** Detect error content returned with a success status.
@@ -566,6 +624,8 @@ implemented merely because they are specified.
 
 ### DART-URL-003: Canonical and host identity
 
+This rule checks requested, final, canonical, index, and sitemap identities for policy consistency.
+
 - **Category and severity:** URL integrity, `MEDIUM`.
 - **Purpose:** Keep requested, final, canonical, index, and sitemap hosts consistent with
   policy.
@@ -583,6 +643,8 @@ implemented merely because they are specified.
 
 ### DART-URL-004: Locale and version preservation
 
+This rule checks whether route transitions preserve required locale and version dimensions.
+
 - **Category and severity:** URL integrity, `MEDIUM`.
 - **Purpose:** Detect routing that loses declared locale or version identity.
 - **Input and applicability:** Route inventory, paired representations, redirect chains.
@@ -598,6 +660,8 @@ implemented merely because they are specified.
 - **Notes:** Missing translations and routing loss are different findings.
 
 ### DART-URL-005: Markdown link integrity
+
+This rule checks scoped Markdown links and fragments for safe, usable resolution.
 
 - **Category and severity:** URL integrity, `HIGH`.
 - **Purpose:** Validate links embedded in machine representations, independently of
@@ -622,6 +686,8 @@ implemented merely because they are specified.
 
 ### DART-URL-006: Route stability against baseline
 
+This rule checks compatible route inventories for removed or changed canonical routes.
+
 - **Category and severity:** URL integrity, `MEDIUM`.
 - **Purpose:** Detect removed or changed canonical routes across compatible inventories.
 - **Input and applicability:** Current and baseline route sets with locale/version
@@ -641,6 +707,8 @@ implemented merely because they are specified.
 
 ### DART-OPS-001: Source-to-build inventory drift
 
+This rule checks explicit source-to-build mappings for missing, duplicated, or unexpected artifacts.
+
 - **Category and severity:** Operational readiness, `HIGH`.
 - **Purpose:** Identify intended source pages that do not produce expected artifacts.
 - **Input and applicability:** Compatible source and build inventories.
@@ -657,6 +725,8 @@ implemented merely because they are specified.
 - **Notes:** This is a key toolkit differentiator.
 
 ### DART-OPS-002: Build-to-live drift
+
+This rule checks captured live evidence against explicitly related expected build artifacts.
 
 - **Category and severity:** Operational readiness, `CRITICAL`.
 - **Purpose:** Detect when deployed content does not match the expected build.
@@ -677,6 +747,8 @@ implemented merely because they are specified.
   deployment ID is not verified lineage.
 
 ### DART-OPS-003: Provenance metadata and trust completeness
+
+This rule checks run and evidence records for required lineage, trust, and completeness metadata.
 
 - **Category and severity:** Operational readiness, `HIGH`.
 - **Purpose:** Ensure a run records available input lineage and how each identity was
@@ -701,6 +773,8 @@ implemented merely because they are specified.
 
 ### DART-OPS-004: Cache and representation variance
 
+This rule checks whether cache and `Vary` behavior can serve the wrong representation.
+
 - **Category and severity:** Integrity and consistency, `MEDIUM`.
 - **Purpose:** Detect cache behavior that can serve the wrong representation.
 - **Input and applicability:** Live HTML and negotiated responses.
@@ -718,7 +792,11 @@ implemented merely because they are specified.
 
 ## Regression and later-stage rules
 
+These rules cover baseline comparison, external evaluator operations, and task evaluation.
+
 ### DART-OPS-005: Baseline regression
+
+This rule checks compatible reports for classified finding and measurement changes.
 
 - **Category and severity:** Operational readiness, policy-derived.
 - **Purpose:** Classify compatible finding and measurement changes.
@@ -746,6 +824,8 @@ implemented merely because they are specified.
 
 ### DART-OPS-006: External evaluator availability
 
+This rule checks recorded external evaluator results for outage or execution-failure evidence.
+
 - **Category and severity:** Operational readiness, `INFO` by default.
 - **Purpose:** Preserve evaluator outage or execution failure as evidence.
 - **Input and applicability:** Configured evaluator adapter.
@@ -761,6 +841,8 @@ implemented merely because they are specified.
 - **Notes:** Never convert outage to pass.
 
 ### DART-TASK-001: Defined task completion
+
+This rule checks whether a named agent satisfies a defined task's approved success oracle.
 
 - **Category and severity:** Task usefulness, project-defined.
 - **Purpose:** Record whether a named agent completes a defined task.
@@ -817,6 +899,8 @@ compatibility promise.
 
 ## Checks not to rebuild
 
+This table assigns established or out-of-scope capabilities to their appropriate owners.
+
 | Capability | Owner or integration path | Reason not to rebuild |
 | --- | --- | --- |
 | Agent-Friendly Documentation Spec score | AFDocs | Existing reference implementation and scoring model |
@@ -862,6 +946,8 @@ changes are policy metadata and must still be recorded. A rule ID must never be 
 for different detection semantics.
 
 ## Open questions
+
+These questions record unresolved decisions, research needs, stakeholder input, and scope boundaries.
 
 - `DECISION_REQUIRED`: Which `DART-*` prefix should become the public stable namespace
   if the executable uses another name?

@@ -1,5 +1,8 @@
 # Phase 2 Decision Log
 
+This log preserves the accepted, amended, and open decisions that define the toolkit's
+Phase 2 architecture.
+
 ## Document status
 
 This log records product and architecture decisions for
@@ -14,6 +17,9 @@ public log records the generalized decisions and their uncertainty labels withou
 distributing the underlying research corpus.
 
 ## Decisions
+
+The table records each decision with its context, trade-offs, evidence, status, and
+remaining uncertainty.
 
 | ID | Decision | Context | Options considered | Chosen approach | Reason | Trade-off | Evidence | Status | Open question |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -60,6 +66,9 @@ import. The practitioner validation protocol is ready and remains `NOT_RUN`. The
 canaries are the acceptance set. Live acquisition remains blocked by its security gate.
 
 ### Phase 3 pre-validation amendments
+
+These amendments clarify repository and prototype details without replacing the
+underlying Phase 2 decisions.
 
 - **ADR-001:** The accepted row records the repository identity chosen during Phase 2.
   As of 2026-09-11, the canonical GitHub repository is
