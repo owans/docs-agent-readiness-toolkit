@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this toolkit or methodology, cite this repository."
+type: software
+title: "Docs Agent Readiness Toolkit"
+authors:
+  - family-names: "Amachree"
+    given-names: "Owanate"
+repository-code: "https://github.com/owans/docs-agent-readiness-toolkit"
+url: "https://github.com/owans/docs-agent-readiness-toolkit"
+license: "MIT"
+version: "0.0.0"
+keywords:
+  - "documentation"
+  - "developer experience"
+  - "evidence"
+  - "deterministic replay"
+  - "AI agents"

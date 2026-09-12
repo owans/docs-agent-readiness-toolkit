@@ -1,0 +1,39 @@
+name: Feature request
+description: Propose a scoped improvement supported by a concrete use case.
+title: "feature: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: The current gate is practitioner validation. Requests do not authorize deferred capabilities.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Describe the user and evidence problem without prescribing a solution.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and use case
+      description: Provide a generic, publishable example and the responsible evidence boundary.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed scope
+      description: Explain the smallest useful change.
+    validations:
+      required: true
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Boundary and compatibility
+      options:
+        - label: I considered schema, baseline, identity, and regression compatibility.
+        - label: I identified any network, execution, privacy, or supply-chain impact.
+        - label: The proposal contains no private evidence or identifying information.
+          required: true
