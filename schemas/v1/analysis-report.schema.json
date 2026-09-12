@@ -1,0 +1,233 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs-agent-readiness.local/schemas/v1/analysis-report.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "report_id",
+    "bundle_id",
+    "compatibility",
+    "evidence_completeness",
+    "findings",
+    "external_evaluations"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "report_id": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "bundle_id": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "report_schema_version",
+        "toolkit_version",
+        "parser_version",
+        "canonicalizer_version",
+        "identity_algorithm_version",
+        "rule_set_digest",
+        "configuration_digest",
+        "target_inventory_digest",
+        "external_adapter_versions",
+        "external_evaluator_versions"
+      ],
+      "properties": {
+        "report_schema_version": { "const": "1.0" },
+        "toolkit_version": { "type": "string" },
+        "parser_version": { "type": "string" },
+        "canonicalizer_version": { "type": "string" },
+        "identity_algorithm_version": { "type": "string" },
+        "rule_set_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "configuration_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "target_inventory_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "external_adapter_versions": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "external_evaluator_versions": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "evidence_completeness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["SOURCE", "BUILD", "LIVE", "RUNTIME_OBSERVATION", "TASK_EVALUATION", "EXTERNAL"],
+      "properties": {
+        "SOURCE": { "$ref": "#/definitions/completeness" },
+        "BUILD": { "$ref": "#/definitions/completeness" },
+        "LIVE": { "$ref": "#/definitions/completeness" },
+        "RUNTIME_OBSERVATION": { "$ref": "#/definitions/completeness" },
+        "TASK_EVALUATION": { "$ref": "#/definitions/completeness" },
+        "EXTERNAL": { "$ref": "#/definitions/completeness" }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rule_id",
+          "rule_version",
+          "implementation_digest",
+          "category",
+          "severity",
+          "status",
+          "title",
+          "deterministic_fact",
+          "target",
+          "sub_identity",
+          "evidence_mode",
+          "responsible_boundary",
+          "identity_status",
+          "evidence",
+          "observed_value",
+          "expected_value",
+          "likely_causes",
+          "recommended_fix",
+          "validation_method",
+          "regression_test_suggestion",
+          "fingerprint"
+        ],
+        "properties": {
+          "rule_id": { "enum": ["DART-OPS-001", "DART-OPS-002", "DART-OPS-003"] },
+          "rule_version": { "const": "1.0.0" },
+          "implementation_digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "category": { "const": "operational-readiness" },
+          "severity": { "enum": ["critical", "high", "medium", "low", "info"] },
+          "status": {
+            "enum": ["PASS", "WARN", "FAIL", "SKIP", "NOT_APPLICABLE", "UNAVAILABLE"]
+          },
+          "title": { "type": "string" },
+          "deterministic_fact": { "type": "string" },
+          "target": { "$ref": "#/definitions/target" },
+          "sub_identity": { "type": "string" },
+          "evidence_mode": { "$ref": "#/definitions/mode" },
+          "responsible_boundary": {
+            "anyOf": [{ "$ref": "#/definitions/mode" }, { "const": "EXTERNAL" }, { "type": "null" }]
+          },
+          "identity_status": {
+            "enum": [
+              "IDENTITY_ESTABLISHED",
+              "IDENTITY_ASSERTED",
+              "IDENTITY_UNVERIFIED",
+              "IDENTITY_INCOMPATIBLE"
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/evidenceReference" }
+          },
+          "observed_value": {},
+          "expected_value": {},
+          "likely_causes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["text", "confidence", "evidence_refs"],
+              "properties": {
+                "text": { "type": "string" },
+                "confidence": { "enum": ["low", "medium", "high"] },
+                "evidence_refs": {
+                  "type": "array",
+                  "items": { "$ref": "#/definitions/evidenceReference" }
+                }
+              }
+            }
+          },
+          "recommended_fix": { "type": "string" },
+          "validation_method": { "type": "string" },
+          "regression_test_suggestion": { "type": "string" },
+          "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+        }
+      }
+    },
+    "external_evaluations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "producer",
+          "evaluator_version",
+          "adapter_version",
+          "acquisition",
+          "authenticity",
+          "evidence_ref",
+          "status"
+        ],
+        "properties": {
+          "producer": { "const": "afdocs" },
+          "evaluator_version": { "type": "string" },
+          "adapter_version": { "const": "1.0.0" },
+          "acquisition": { "const": "IMPORTED" },
+          "authenticity": { "enum": ["UNVERIFIED", "ASSERTED", "ATTESTED"] },
+          "evidence_ref": { "$ref": "#/definitions/evidenceReference" },
+          "status": { "enum": ["AVAILABLE", "UNAVAILABLE"] },
+          "reason": { "type": "string" },
+          "target": { "type": "string" },
+          "measured_at": { "type": "string" },
+          "raw_score": { "type": "number" },
+          "raw_grade": { "type": "string" },
+          "checks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "category", "raw_status", "normalized_status", "message"],
+              "properties": {
+                "id": { "type": "string" },
+                "category": { "type": "string" },
+                "raw_status": { "type": "string" },
+                "normalized_status": {
+                  "enum": ["PASS", "WARN", "FAIL", "SKIP", "NOT_APPLICABLE", "UNAVAILABLE"]
+                },
+                "message": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "mode": {
+      "enum": ["SOURCE", "BUILD", "LIVE", "RUNTIME_OBSERVATION", "TASK_EVALUATION"]
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "identity"],
+      "properties": {
+        "kind": { "enum": ["DOCUMENT", "ARTIFACT", "DEPLOYMENT", "EXTERNAL_EVALUATION"] },
+        "identity": { "type": "string" },
+        "locale": { "type": "string" },
+        "version": { "type": "string" }
+      }
+    },
+    "evidenceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_id", "sha256"],
+      "properties": {
+        "evidence_id": { "type": "string" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "completeness": {
+      "enum": ["COMPLETE", "PARTIAL", "UNAVAILABLE", "NOT_REQUESTED"]
+    }
+  }
+}

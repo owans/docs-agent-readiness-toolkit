@@ -1,0 +1,36 @@
+{
+  "name": "source boundary defect",
+  "files": {
+    "build/page/index.html": "<h1>Generated without declared source</h1>\n"
+  },
+  "configuration": {
+    "schema_version": "1.0",
+    "roots": { "SOURCE": "./source", "BUILD": "./build" },
+    "requested_modes": ["SOURCE", "BUILD"],
+    "inputs": [
+      {
+        "id": "build:page",
+        "mode": "BUILD",
+        "root": "BUILD",
+        "path": "page/index.html",
+        "media_type": "text/html",
+        "acquisition": { "kind": "COLLECTED", "collector": "local-build-v1" },
+        "target": { "kind": "ARTIFACT", "identity": "build:page" }
+      }
+    ],
+    "mappings": [
+      {
+        "id": "mapping:page",
+        "from": "source:page",
+        "to": "build:page",
+        "relation": "SOURCE_TO_BUILD",
+        "declared_trust": "USER_ASSERTED"
+      }
+    ]
+  },
+  "expected": {
+    "rule_id": "DART-OPS-001",
+    "status": "FAIL",
+    "responsible_boundary": "SOURCE"
+  }
+}

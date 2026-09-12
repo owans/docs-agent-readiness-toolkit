@@ -1,0 +1,54 @@
+{
+  "name": "captured build live drift",
+  "files": {
+    "build/page.md": "representation A\n",
+    "import/live-page.md": "representation B\n"
+  },
+  "configuration": {
+    "schema_version": "1.0",
+    "roots": { "BUILD": "./build", "IMPORT": "./import" },
+    "requested_modes": ["BUILD", "LIVE"],
+    "inputs": [
+      {
+        "id": "build:page",
+        "mode": "BUILD",
+        "root": "BUILD",
+        "path": "page.md",
+        "media_type": "text/markdown",
+        "acquisition": { "kind": "COLLECTED", "collector": "local-build-v1" },
+        "target": { "kind": "ARTIFACT", "identity": "page" }
+      },
+      {
+        "id": "live:page",
+        "mode": "LIVE",
+        "root": "IMPORT",
+        "path": "live-page.md",
+        "media_type": "text/markdown",
+        "acquisition": { "kind": "IMPORTED", "producer": "recorded-fixture" },
+        "target": { "kind": "DEPLOYMENT", "identity": "page" },
+        "provenance": {
+          "deployment_id": {
+            "value": "deployment-assertion-fixture",
+            "trust": "USER_ASSERTED"
+          },
+          "authenticity": "ASSERTED"
+        }
+      }
+    ],
+    "mappings": [
+      {
+        "id": "mapping:build-live-page",
+        "from": "build:page",
+        "to": "live:page",
+        "relation": "BUILD_TO_EXPECTED_LIVE",
+        "declared_trust": "USER_ASSERTED"
+      }
+    ]
+  },
+  "expected": {
+    "rule_id": "DART-OPS-002",
+    "status": "FAIL",
+    "responsible_boundary": "LIVE",
+    "network_requests": 0
+  }
+}

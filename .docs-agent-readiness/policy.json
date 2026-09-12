@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "incompatible_baseline": "ERROR",
+  "baseline_path": "tests/golden/canary-03-report.json",
+  "external_afdocs_required": false,
+  "required_completeness": {
+    "SOURCE": "COMPLETE",
+    "BUILD": "COMPLETE"
+  },
+  "rules": [
+    {
+      "rule_id": "DART-OPS-001",
+      "finding_status": "FAIL",
+      "effect": "BLOCKING"
+    },
+    {
+      "rule_id": "DART-OPS-002",
+      "finding_status": "FAIL",
+      "effect": "BLOCKING"
+    },
+    {
+      "regression_state": "CHANGED",
+      "effect": "BLOCKING"
+    },
+    {
+      "regression_state": "INCOMPATIBLE",
+      "effect": "BLOCKING"
+    }
+  ]
+}

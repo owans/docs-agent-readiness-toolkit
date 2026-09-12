@@ -1,0 +1,28 @@
+{
+  "type": "agent-score",
+  "overallScore": 100,
+  "grade": "A+",
+  "checksTotal": 2,
+  "checksPassed": 1,
+  "checksWarned": 0,
+  "checksFailed": 0,
+  "checksSkipped": 1,
+  "checks": [
+    {
+      "id": "llms-txt-exists",
+      "category": "content-discoverability",
+      "status": "pass",
+      "message": "Generic public fixture pass"
+    },
+    {
+      "id": "auth-alternative-access",
+      "category": "content-access",
+      "status": "skip",
+      "message": "Generic public fixture skip"
+    }
+  ],
+  "source": "afdocs",
+  "sourceVersion": "0.18.7",
+  "sourceUrl": "https://docs.example.test",
+  "measuredAt": "2026-09-10T00:00:00.000Z"
+}

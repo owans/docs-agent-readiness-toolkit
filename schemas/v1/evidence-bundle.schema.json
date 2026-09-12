@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs-agent-readiness.local/schemas/v1/evidence-bundle.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "bundle_version",
+    "requested_modes",
+    "requested_external",
+    "evidence",
+    "mappings"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "bundle_version": { "const": "1.0" },
+    "requested_modes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": ["SOURCE", "BUILD", "LIVE", "RUNTIME_OBSERVATION", "TASK_EVALUATION"]
+      }
+    },
+    "requested_external": { "type": "boolean" },
+    "evidence": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "mode", "acquisition", "target", "content", "provenance", "properties"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]+$", "maxLength": 200 },
+          "mode": {
+            "enum": ["SOURCE", "BUILD", "LIVE", "RUNTIME_OBSERVATION", "TASK_EVALUATION"]
+          },
+          "acquisition": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind"],
+            "properties": {
+              "kind": { "enum": ["COLLECTED", "IMPORTED", "ASSERTED", "ATTESTED"] },
+              "collector": { "type": "string", "maxLength": 200 },
+              "producer": { "type": "string", "maxLength": 200 }
+            }
+          },
+          "target": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "identity"],
+            "properties": {
+              "kind": {
+                "enum": ["DOCUMENT", "ARTIFACT", "DEPLOYMENT", "EXTERNAL_EVALUATION"]
+              },
+              "identity": { "type": "string", "minLength": 1, "maxLength": 4096 },
+              "locale": { "type": "string", "maxLength": 100 },
+              "version": { "type": "string", "maxLength": 100 }
+            }
+          },
+          "content": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["blob", "sha256", "bytes", "media_type"],
+            "properties": {
+              "blob": { "type": "string", "pattern": "^blobs/[a-f0-9]{64}$" },
+              "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "bytes": { "type": "integer", "minimum": 0, "maximum": 10485760 },
+              "media_type": { "type": "string", "minLength": 1, "maxLength": 200 }
+            }
+          },
+          "provenance": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "source": { "$ref": "#/definitions/trustedValue" },
+              "deployment_id": { "$ref": "#/definitions/trustedValue" }
+            }
+          },
+          "properties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["integrity", "provenance", "authenticity", "freshness"],
+            "properties": {
+              "integrity": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["algorithm", "digest", "status"],
+                "properties": {
+                  "algorithm": { "const": "sha256" },
+                  "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                  "status": { "const": "MATCHED" }
+                }
+              },
+              "provenance": { "enum": ["PRESENT", "PARTIAL", "ABSENT"] },
+              "authenticity": { "enum": ["UNVERIFIED", "ASSERTED", "ATTESTED"] },
+              "freshness": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["status"],
+                "properties": {
+                  "status": { "enum": ["KNOWN", "UNKNOWN"] },
+                  "observed_at": { "$ref": "#/definitions/trustedValue" },
+                  "generated_at": { "$ref": "#/definitions/trustedValue" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "mappings": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "from", "to", "relation", "declared_trust"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]+$", "maxLength": 200 },
+          "from": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "to": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "relation": { "enum": ["SOURCE_TO_BUILD", "BUILD_TO_EXPECTED_LIVE"] },
+          "declared_trust": {
+            "enum": [
+              "OBSERVED_BY_COLLECTOR",
+              "DETERMINISTICALLY_DERIVED",
+              "USER_ASSERTED",
+              "EXTERNALLY_ATTESTED"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "trustedValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "trust"],
+      "properties": {
+        "value": { "type": "string", "maxLength": 4096 },
+        "trust": {
+          "enum": [
+            "OBSERVED_BY_COLLECTOR",
+            "DETERMINISTICALLY_DERIVED",
+            "USER_ASSERTED",
+            "EXTERNALLY_ATTESTED"
+          ]
+        }
+      }
+    }
+  }
+}

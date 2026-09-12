@@ -1,0 +1,37 @@
+{
+  "name": "source omission",
+  "files": {
+    "source/docs/page.md": "# Present in source\n"
+  },
+  "configuration": {
+    "schema_version": "1.0",
+    "roots": { "SOURCE": "./source", "BUILD": "./build" },
+    "requested_modes": ["SOURCE", "BUILD"],
+    "inputs": [
+      {
+        "id": "source:page",
+        "mode": "SOURCE",
+        "root": "SOURCE",
+        "path": "docs/page.md",
+        "media_type": "text/markdown",
+        "acquisition": { "kind": "COLLECTED", "collector": "local-source-v1" },
+        "target": { "kind": "DOCUMENT", "identity": "source:page" }
+      }
+    ],
+    "mappings": [
+      {
+        "id": "mapping:page",
+        "from": "source:page",
+        "to": "build:page",
+        "relation": "SOURCE_TO_BUILD",
+        "declared_trust": "USER_ASSERTED"
+      }
+    ]
+  },
+  "expected": {
+    "rule_id": "DART-OPS-001",
+    "status": "FAIL",
+    "responsible_boundary": "BUILD",
+    "build_completeness": "UNAVAILABLE"
+  }
+}

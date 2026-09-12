@@ -1,0 +1,18 @@
+{
+  "source": {
+    "fixture": "localization/source-defect",
+    "expected_boundary": "SOURCE"
+  },
+  "build": {
+    "fixture": "canaries/01-source-omission",
+    "expected_boundary": "BUILD"
+  },
+  "live": {
+    "fixture": "canaries/02-build-live-drift",
+    "expected_boundary": "LIVE"
+  },
+  "external": {
+    "fixture": "localization/external-defect",
+    "expected_boundary": "EXTERNAL"
+  }
+}

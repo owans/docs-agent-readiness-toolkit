@@ -1,0 +1,46 @@
+{
+  "name": "explicit representation mapping",
+  "files": {
+    "source/docs/getting-started.md": "# Getting started\n",
+    "build/getting-started/index.html": "<h1>Getting started</h1>\n"
+  },
+  "configuration": {
+    "schema_version": "1.0",
+    "roots": { "SOURCE": "./source", "BUILD": "./build" },
+    "requested_modes": ["SOURCE", "BUILD"],
+    "inputs": [
+      {
+        "id": "source:getting-started",
+        "mode": "SOURCE",
+        "root": "SOURCE",
+        "path": "docs/getting-started.md",
+        "media_type": "text/markdown",
+        "acquisition": { "kind": "COLLECTED", "collector": "local-source-v1" },
+        "target": { "kind": "DOCUMENT", "identity": "getting-started" }
+      },
+      {
+        "id": "build:getting-started",
+        "mode": "BUILD",
+        "root": "BUILD",
+        "path": "getting-started/index.html",
+        "media_type": "text/html",
+        "acquisition": { "kind": "COLLECTED", "collector": "local-build-v1" },
+        "target": { "kind": "ARTIFACT", "identity": "getting-started" }
+      }
+    ],
+    "mappings": [
+      {
+        "id": "mapping:getting-started",
+        "from": "source:getting-started",
+        "to": "build:getting-started",
+        "relation": "SOURCE_TO_BUILD",
+        "declared_trust": "USER_ASSERTED"
+      }
+    ]
+  },
+  "expected": {
+    "rule_id": "DART-OPS-001",
+    "status": "PASS",
+    "identity_status": "IDENTITY_ASSERTED"
+  }
+}

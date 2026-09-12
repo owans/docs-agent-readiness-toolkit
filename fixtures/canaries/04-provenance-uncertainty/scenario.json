@@ -1,0 +1,34 @@
+{
+  "name": "asserted deployment provenance",
+  "files": {
+    "import/live-page.md": "captured representation\n"
+  },
+  "configuration": {
+    "schema_version": "1.0",
+    "roots": { "IMPORT": "./import" },
+    "requested_modes": ["LIVE"],
+    "inputs": [
+      {
+        "id": "live:asserted",
+        "mode": "LIVE",
+        "root": "IMPORT",
+        "path": "live-page.md",
+        "media_type": "text/markdown",
+        "acquisition": { "kind": "ASSERTED", "producer": "caller" },
+        "target": { "kind": "DEPLOYMENT", "identity": "page" },
+        "provenance": {
+          "deployment_id": { "value": "abc123", "trust": "USER_ASSERTED" },
+          "authenticity": "ASSERTED"
+        }
+      }
+    ],
+    "mappings": []
+  },
+  "expected": {
+    "rule_id": "DART-OPS-003",
+    "status": "PASS",
+    "acquisition": "ASSERTED",
+    "deployment_trust": "USER_ASSERTED",
+    "identity_status": "IDENTITY_UNVERIFIED"
+  }
+}

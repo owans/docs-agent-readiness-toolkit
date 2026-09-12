@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs-agent-readiness.local/schemas/v1/comparison-report.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "baseline_report_id",
+    "current_report_id",
+    "compatible",
+    "regressions"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "baseline_report_id": { "type": "string" },
+    "current_report_id": { "type": "string" },
+    "compatible": { "type": "boolean" },
+    "regressions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["state", "fingerprint"],
+        "properties": {
+          "state": {
+            "enum": ["NEW", "RESOLVED", "CHANGED", "UNCHANGED", "INCOMPATIBLE"]
+          },
+          "fingerprint": { "type": "string" },
+          "previous_status": {
+            "enum": ["PASS", "WARN", "FAIL", "SKIP", "NOT_APPLICABLE", "UNAVAILABLE"]
+          },
+          "current_status": {
+            "enum": ["PASS", "WARN", "FAIL", "SKIP", "NOT_APPLICABLE", "UNAVAILABLE"]
+          },
+          "reason": {
+            "enum": [
+              "RULE_VERSION_CHANGED",
+              "SCHEMA_INCOMPATIBLE",
+              "CONFIGURATION_CHANGED",
+              "TARGET_IDENTITY_CHANGED",
+              "CANONICALIZER_VERSION_CHANGED",
+              "IDENTITY_ALGORITHM_CHANGED",
+              "PARSER_VERSION_CHANGED",
+              "EVALUATOR_VERSION_CHANGED",
+              "EXTERNAL_CHECK_UNAVAILABLE"
+            ]
+          },
+          "baseline": { "type": "object" },
+          "current": { "type": "object" },
+          "external_producer": { "type": "string" },
+          "external_check_id": { "type": "string" }
+        }
+      }
+    }
+  }
+}

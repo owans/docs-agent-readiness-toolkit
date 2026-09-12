@@ -1,0 +1,42 @@
+{
+  "name": "imported external evaluator defect",
+  "files": {
+    "import/afdocs.json": "{\"type\":\"agent-score\",\"overallScore\":80,\"grade\":\"B\",\"checksTotal\":1,\"checksPassed\":0,\"checksWarned\":0,\"checksFailed\":1,\"checksSkipped\":0,\"checks\":[{\"id\":\"llms-txt-exists\",\"category\":\"content-discoverability\",\"status\":\"fail\",\"message\":\"Recorded evaluator failure\"}],\"source\":\"afdocs\",\"sourceVersion\":\"0.18.7\",\"sourceUrl\":\"https://docs.example.test\",\"measuredAt\":\"2026-09-10T00:00:00.000Z\"}\n"
+  },
+  "configuration": {
+    "schema_version": "1.0",
+    "roots": { "IMPORT": "./import" },
+    "requested_modes": ["LIVE"],
+    "requested_external": true,
+    "inputs": [
+      {
+        "id": "external:afdocs",
+        "mode": "LIVE",
+        "root": "IMPORT",
+        "path": "afdocs.json",
+        "media_type": "application/json",
+        "acquisition": { "kind": "IMPORTED", "producer": "afdocs" },
+        "target": {
+          "kind": "EXTERNAL_EVALUATION",
+          "identity": "afdocs:https://docs.example.test"
+        },
+        "provenance": {
+          "source": { "value": "afdocs", "trust": "USER_ASSERTED" },
+          "observed_at": {
+            "value": "2026-09-10T00:00:00.000Z",
+            "trust": "USER_ASSERTED"
+          },
+          "authenticity": "UNVERIFIED"
+        }
+      }
+    ],
+    "mappings": []
+  },
+  "expected": {
+    "producer": "afdocs",
+    "acquisition": "IMPORTED",
+    "raw_status": "fail",
+    "normalized_status": "FAIL",
+    "responsible_boundary": "EXTERNAL"
+  }
+}

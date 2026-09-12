@@ -1,0 +1,47 @@
+{
+  "name": "docs-agent-readiness-toolkit-prototype",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Pre-validation evidence, replay, baseline, and policy prototype for documentation agent readiness.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/owans/docs-agent-readiness-toolkit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/owans/docs-agent-readiness-toolkit/issues"
+  },
+  "homepage": "https://github.com/owans/docs-agent-readiness-toolkit#readme",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "docs:lint": "markdownlint-cli2 \"*.md\" \"docs/**/*.md\" \".github/**/*.md\"",
+    "docs:links": "vitest run tests/documentation-links.test.ts",
+    "workflows:validate": "vitest run tests/workflow-yaml.test.ts",
+    "lint": "biome lint src tests fixtures schemas examples package.json tsconfig.json tsconfig.build.json biome.json vitest.config.ts .docs-agent-readiness",
+    "format": "biome format --write src tests fixtures schemas examples package.json tsconfig.json tsconfig.build.json biome.json vitest.config.ts .docs-agent-readiness",
+    "format:check": "biome format src tests fixtures schemas examples package.json tsconfig.json tsconfig.build.json biome.json vitest.config.ts .docs-agent-readiness",
+    "check": "npm run format:check && npm run lint && npm run docs:lint && npm run typecheck && npm test && npm run build",
+    "prototype": "node dist/cli.js"
+  },
+  "dependencies": {
+    "ajv": "8.20.0",
+    "json-canonicalize": "3.0.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.13",
+    "@types/node": "22.20.2",
+    "markdownlint-cli2": "0.23.2",
+    "typescript": "7.0.2",
+    "vitest": "5.0.0",
+    "yaml": "2.9.1"
+  },
+  "overrides": {
+    "smol-toml": "1.8.0"
+  }
+}
