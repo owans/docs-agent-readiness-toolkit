@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.13",
-    "@types/node": "22.20.2",
+    "@types/node": "26.5.1",
     "markdownlint-cli2": "0.23.2",
     "typescript": "7.0.2",
     "vitest": "5.0.0",
