@@ -1,0 +1,22 @@
+{
+  "type": "agent-score",
+  "overallScore": 80,
+  "grade": "B",
+  "checksTotal": 1,
+  "checksPassed": 0,
+  "checksWarned": 0,
+  "checksFailed": 1,
+  "checksSkipped": 0,
+  "checks": [
+    {
+      "id": "llms-txt-exists",
+      "category": "content-discoverability",
+      "status": "fail",
+      "message": "Recorded evaluator failure"
+    }
+  ],
+  "source": "afdocs",
+  "sourceVersion": "0.18.7",
+  "sourceUrl": "https://docs.example.test",
+  "measuredAt": "2026-09-10T00:00:00.000Z"
+}

@@ -27,7 +27,7 @@ Status: current.
 - Cross-mode canaries and localization: complete for the prototype.
 - Baseline comparison and CI policy: complete for the prototype.
 - Recorded AFDocs import: complete for the evidenced 0.18.7 shape.
-- Practitioner validation: next, status `NOT_RUN`.
+- Practitioner validation: first pilot complete, full protocol not yet run.
 - Bounded live acquisition: gated and not implemented.
 - Framework adapters: future and demand-led.
 
@@ -41,11 +41,17 @@ task evaluation, automatic fixes, live acquisition, or framework adapters.
 
 ## Current gate
 
-Run real practitioner sessions with:
+Practitioner sessions have been run with all three intended roles, and the results are
+recorded in the
+[practitioner validation results](docs/phase3/practitioner-validation-results.md):
 
 1. a technical writer working in docs as code;
 2. a documentation engineer responsible for generation or deployment;
 3. a DevEx or platform engineer responsible for CI policy.
+
+The pilot covered only the defect-free example, so four of the six success criteria
+remain unevaluated. The gate stays open until the recorded reporting and terminology
+problems are corrected and the protocol is re-run against the full fixture set.
 
 Do not represent simulated sessions as human validation. Do not begin live acquisition
 until its security matrix is executable and approved.

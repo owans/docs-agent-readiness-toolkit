@@ -18,6 +18,7 @@ const normativeDocuments = [
   "docs/phase3/README.md",
   "docs/phase3/live-acquisition-security-gate.md",
   "docs/phase3/practitioner-validation-protocol.md",
+  "docs/phase3/practitioner-validation-results.md",
   "docs/releasing.md",
 ];
 

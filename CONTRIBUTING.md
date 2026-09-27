@@ -59,7 +59,8 @@ invalidate comparisons.
 
 Use direct, evidence-backed language. Do not claim production readiness, complete
 security, universal agent success, live coverage, or human validation without the
-required evidence. Practitioner validation remains `NOT_RUN`.
+required evidence. Practitioner validation has completed a first pilot only, and four of
+its six success criteria remain unevaluated.
 
 Local documentation links must resolve. Official external links that reject automated
 clients may be documented rather than replaced when they are valid in a browser.

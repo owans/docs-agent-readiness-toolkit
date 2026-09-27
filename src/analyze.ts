@@ -85,11 +85,11 @@ function sourceBuildFinding(
   const evidence = [from, to].filter((item): item is Evidence => Boolean(item));
   const identityStatus = mappingIdentityStatus(mapping, from, to);
   let status: FindingStatus = "PASS";
-  let fact = `Explicit mapping ${mapping.id} references present SOURCE and BUILD evidence.`;
+  let fact = `Declared source-to-build relation ${mapping.id} references present SOURCE and BUILD evidence.`;
   let boundary: EvidenceMode | null = null;
   if (!from && !to) {
     status = "UNAVAILABLE";
-    fact = `Explicit mapping ${mapping.id} references no captured SOURCE or BUILD evidence.`;
+    fact = `Declared source-to-build relation ${mapping.id} references no captured SOURCE or BUILD evidence.`;
     boundary = "SOURCE";
   } else if (!from) {
     status = "FAIL";

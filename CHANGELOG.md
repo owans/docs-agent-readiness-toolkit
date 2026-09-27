@@ -20,13 +20,29 @@ capabilities.
 - Recorded AFDocs 0.18.7 import boundary.
 - Generic canary, localization, golden, and offline security tests.
 - Public contribution, security, support, maintenance, and release documentation.
+- Runnable scenario examples under `examples/scenarios/` that reproduce the acceptance
+  fixtures through the documented commands, including reviewed baselines and advisory
+  and blocking trusted policies.
+- Anonymized practitioner validation results for the first pilot, with proposed
+  acceptance thresholds recorded as `STAKEHOLDER_REQUIRED`.
+- A scenario walkthrough covering failure localization, baseline comparison, an
+  incompatible baseline, and both CI policy outcomes.
 
 ### Changed
 
-The unreleased work changes the organization of public and private project material.
+The unreleased work changes the organization of public and private project material and
+the detail the human-readable report carries.
 
 - Separated the public reusable toolkit from the private case-study and research
   workspace.
+- The Markdown report now describes every finding, including passing findings, with
+  observed and expected values, evidence locations and their locator trust, and the
+  authenticity and freshness qualifiers behind a passing status.
+- `bundle create`, `analyze`, and `ci` now confirm the bundle and reports they wrote
+  instead of completing silently.
+- The `DART-OPS-001` deterministic fact names the declared source-to-build relation
+  rather than repeating the word mapping, which changes `report_id` for affected
+  reports without changing any compatibility digest.
 
 ### Deprecated
 
@@ -42,9 +58,13 @@ No features or interfaces are currently removed.
 
 ### Fixed
 
-No fixes are currently recorded.
+The unreleased work corrects documentation and reporting problems the first practitioner
+pilot recorded.
 
-- Nothing.
+- Removed the redundant `npm run build` step from the documented setup, because
+  `npm run check` already ends in a build.
+- Documented that output paths are never overwritten and that a passing finding
+  deliberately carries no responsible boundary and no likely cause.
 
 ### Security
 

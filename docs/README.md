@@ -24,6 +24,7 @@ future live acquisition, and the practitioner validation method.
 - [Implementation Guide](phase3/README.md)
 - [Live Acquisition Security Gate](phase3/live-acquisition-security-gate.md)
 - [Practitioner Validation Protocol](phase3/practitioner-validation-protocol.md)
+- [Practitioner Validation Results](phase3/practitioner-validation-results.md)
 
 Live acquisition is not part of the current implementation.
 
