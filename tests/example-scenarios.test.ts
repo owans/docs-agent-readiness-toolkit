@@ -4,6 +4,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { importRecordedAfdocs } from "../src/afdocs.js";
 import { analyzeBundle } from "../src/analyze.js";
+import { canonicalJson } from "../src/canonical.js";
 import { runCli } from "../src/cli.js";
 import { compareReports } from "../src/compare.js";
 import type { AnalysisReport } from "../src/contracts.js";
@@ -14,6 +15,7 @@ import {
   loadAnalysisReport,
   loadAnalysisReportFromRoot,
   renderMarkdownReport,
+  writeCanonicalJson,
 } from "../src/report.js";
 
 const scenarioRoot = path.join(process.cwd(), "examples", "scenarios");
@@ -98,6 +100,8 @@ describe("committed practitioner scenarios", () => {
       identity_status: "IDENTITY_ASSERTED",
       responsible_boundary: null,
     });
+    expect(finding?.recommended_fix).toContain("this status is not an approval");
+    expect(finding?.recommended_fix).not.toContain("No remediation required");
   });
 
   it("preserves asserted deployment provenance as unverified", async () => {
@@ -130,6 +134,11 @@ describe("committed practitioner scenarios", () => {
   it("classifies the regression pair as a compatible CHANGED transition", async () => {
     const baseline = await analyzeScenario("regression/baseline");
     const current = await analyzeScenario("regression/current");
+    expect(baseline.findings.map((finding) => finding.fingerprint)).toEqual([
+      "sha256:e0aab5ae9e28cdfd77833d3f98dce8e9484cea5a6b5ea7017470d1d45f23698e",
+      "sha256:c16be0a31d56a663ce66e29fc98236e71fa91c495ba703c901af200e870d8cb8",
+      "sha256:c19e673699d0ba1a1a913302b8121ad20d9c9923e1440a37f217ee5d9580ae3a",
+    ]);
     const comparison = compareReports(baseline, current);
     expect(comparison.compatible).toBe(true);
     expect(
@@ -175,9 +184,13 @@ describe("committed practitioner scenarios", () => {
   it("renders passing findings with their locations and trust qualifiers", async () => {
     const { report, locators } = await runScenario("clean-mapping");
     const markdown = renderMarkdownReport(report, undefined, undefined, locators);
-    expect(markdown).toContain("### DART-OPS-001: Explicit source-to-build identity");
+    expect(markdown).toContain(
+      "### DART-OPS-001 mapping:getting-started: Explicit source-to-build mapping",
+    );
     expect(markdown).toContain("- Status: PASS");
     expect(markdown).toContain("- Identity: IDENTITY_ASSERTED");
+    expect(markdown).toContain("not approval of origin, freshness, lineage, or deployment");
+    expect(markdown).not.toContain("No remediation required");
     expect(markdown).toContain("- Observed authenticity: UNVERIFIED");
     expect(markdown).toContain("- Observed freshness: UNKNOWN");
     expect(markdown).toContain("- Expected integrity: MATCHED");
@@ -212,7 +225,10 @@ describe("committed practitioner scenarios", () => {
       expect(markdown).toContain("## Regression");
       expect(markdown).toContain("- Compatible: true");
       expect(markdown).toContain("- CHANGED: 2");
-      expect(markdown).toContain("PASS -> FAIL");
+      expect(markdown).toContain(
+        "CHANGED DART-OPS-001 mapping:page on declared target build:page: PASS -> FAIL",
+      );
+      expect(markdown).not.toMatch(/CHANGED sha256:/u);
     } finally {
       await rm(root, { recursive: true, force: true });
     }
@@ -244,6 +260,170 @@ describe("committed practitioner scenarios", () => {
       expect(markdown).toContain("RULE_VERSION_CHANGED");
       expect(markdown).not.toContain("- NEW: 1");
       expect(markdown).not.toContain("- RESOLVED: 1");
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("renders compare Markdown locations when a bundle is supplied", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "dart-compare-bundle-"));
+    try {
+      const baseline = await analyzeScenarioToFile(root, "regression/baseline", "baseline");
+      const current = await analyzeScenarioToFile(root, "regression/current", "current");
+      const markdownPath = path.join(root, "comparison.md");
+      const code = await runCli(
+        [
+          "compare",
+          "--baseline",
+          baseline,
+          "--current",
+          current,
+          "--bundle",
+          path.join(root, "current-bundle"),
+          "--markdown",
+          markdownPath,
+        ],
+        cliSink,
+      );
+      expect(code).toBe(0);
+      const markdown = await readFile(markdownPath, "utf8");
+      expect(markdown).toContain("at `SOURCE:docs/page.md` (locator trust OBSERVED_BY_COLLECTOR)");
+      expect(markdown).toContain("| SOURCE |");
+      expect(markdown).toContain("| BUILD |");
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("renders the completeness table in the same order from memory and parsed JSON", async () => {
+    const report = await analyzeScenario("clean-mapping");
+    const root = await mkdtemp(path.join(os.tmpdir(), "dart-completeness-"));
+    try {
+      const reportPath = path.join(root, "report.json");
+      await writeCanonicalJson(reportPath, report);
+      const fromMemory = renderMarkdownReport(report);
+      const fromParsed = renderMarkdownReport(await loadAnalysisReport(reportPath));
+      const table = (markdown: string): string => {
+        const start = markdown.indexOf("| Evidence | Completeness |");
+        const end = markdown.indexOf("## Findings");
+        return markdown.slice(start, end);
+      };
+      expect(canonicalJson(report)).toBe(canonicalJson(await loadAnalysisReport(reportPath)));
+      expect(table(fromMemory)).toBe(table(fromParsed));
+      expect(table(fromMemory)).toContain(
+        [
+          "| SOURCE | COMPLETE |",
+          "| BUILD | COMPLETE |",
+          "| LIVE | NOT_REQUESTED |",
+          "| RUNTIME_OBSERVATION | NOT_REQUESTED |",
+          "| TASK_EVALUATION | NOT_REQUESTED |",
+          "| EXTERNAL | NOT_REQUESTED |",
+        ].join("\n"),
+      );
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("keeps one regression bundle advisory or blocking by trusted policy only", async () => {
+    const current = await analyzeScenario("regression/current");
+    const advisoryRoot = path.join(scenarioRoot, "regression", "trusted-base-advisory");
+    const blockingRoot = path.join(scenarioRoot, "regression", "trusted-base");
+    const advisory = await loadTrustedPolicy(advisoryRoot);
+    const blocking = await loadTrustedPolicy(blockingRoot);
+    const advisoryBaseline = await loadAnalysisReportFromRoot(
+      advisoryRoot,
+      String(advisory.baselineRelativePath),
+    );
+    const blockingBaseline = await loadAnalysisReportFromRoot(
+      blockingRoot,
+      String(blocking.baselineRelativePath),
+    );
+    const advisoryComparison = compareReports(advisoryBaseline, current);
+    const blockingComparison = compareReports(blockingBaseline, current);
+    expect(advisoryComparison.compatible).toBe(true);
+    expect(blockingComparison.compatible).toBe(true);
+    expect(advisoryComparison.current_report_id).toBe(blockingComparison.current_report_id);
+    expect(evaluatePolicy(current, advisoryComparison, advisory.policy)).toMatchObject({
+      effect: "ADVISORY",
+      exit_code: 0,
+    });
+    const blockingResult = evaluatePolicy(current, blockingComparison, blocking.policy);
+    expect(blockingResult).toMatchObject({
+      effect: "BLOCKING",
+      exit_code: 1,
+    });
+    expect(blockingResult.reasons.some((reason) => /sha256:[a-f0-9]{64}/u.test(reason))).toBe(
+      false,
+    );
+    expect(
+      blockingResult.reasons.some((reason) =>
+        reason.includes(
+          "BLOCKING: regression CHANGED DART-OPS-001 mapping:page on declared target build:page PASS -> FAIL",
+        ),
+      ),
+    ).toBe(true);
+  });
+
+  it("labels the bundle digest and pluralizes a single evidence record", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "dart-bundle-msg-"));
+    try {
+      let stdout = "";
+      const code = await runCli(
+        [
+          "bundle",
+          "create",
+          "--config",
+          path.join(scenarioRoot, "source-defect", "collector.json"),
+          "--output",
+          path.join(root, "bundle"),
+        ],
+        {
+          stdout: (value) => {
+            stdout += value;
+          },
+          stderr: () => undefined,
+        },
+      );
+      expect(code).toBe(0);
+      expect(stdout).toMatch(/^Bundle ID: sha256:[a-f0-9]{64}\n/u);
+      expect(stdout).toContain("Collected 1 evidence record into");
+      expect(stdout).not.toContain("Collected 1 evidence records");
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("names an existing output path instead of surfacing a raw EEXIST error", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "dart-eexist-"));
+    try {
+      const reportPath = path.join(root, "report.json");
+      const bundlePath = path.join(root, "bundle");
+      await runCli(
+        [
+          "bundle",
+          "create",
+          "--config",
+          path.join(scenarioRoot, "clean-mapping", "collector.json"),
+          "--output",
+          bundlePath,
+        ],
+        cliSink,
+      );
+      expect(await runCli(["analyze", "--bundle", bundlePath, "--json", reportPath], cliSink)).toBe(
+        0,
+      );
+      let stderr = "";
+      const code = await runCli(["analyze", "--bundle", bundlePath, "--json", reportPath], {
+        stdout: () => undefined,
+        stderr: (value) => {
+          stderr += value;
+        },
+      });
+      expect(code).toBe(3);
+      expect(stderr).toContain(`Refusing to overwrite an existing output file: ${reportPath}`);
+      expect(stderr).toContain("Choose a new output path or remove the existing file.");
+      expect(stderr).not.toContain("EEXIST");
     } finally {
       await rm(root, { recursive: true, force: true });
     }

@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "incompatible_baseline": "ADVISORY",
+  "baseline_path": "baseline-report.json",
+  "external_afdocs_required": false,
+  "rules": [
+    {
+      "rule_id": "DART-OPS-001",
+      "finding_status": "FAIL",
+      "effect": "ADVISORY"
+    },
+    {
+      "regression_state": "CHANGED",
+      "effect": "ADVISORY"
+    }
+  ]
+}

@@ -33,6 +33,18 @@ function ruleId(regression: Regression): string | undefined {
   );
 }
 
+/** Writer-readable identity for a regression row. Fingerprints stay off the scan line. */
+export function describeRegression(regression: Regression): string {
+  if (regression.fingerprint === "*") {
+    return "whole comparison";
+  }
+  const finding = regression.current ?? regression.baseline;
+  if (!finding) {
+    return regression.fingerprint;
+  }
+  return `${finding.rule_id} ${finding.sub_identity} on declared target ${finding.target.identity}`;
+}
+
 function strongest(effects: PolicyEffect[]): PolicyEffect {
   return effects.reduce(
     (current, effect) => (EFFECT_RANK[effect] > EFFECT_RANK[current] ? effect : current),
@@ -72,7 +84,13 @@ export function evaluatePolicy(
     const effect = strongest(matches.map((rule) => rule.effect));
     effects.push(effect);
     if (effect !== "INFORMATIONAL") {
-      reasons.push(`${effect}: regression ${regression.state} ${regression.fingerprint}`);
+      const transition =
+        regression.previous_status && regression.current_status
+          ? ` ${regression.previous_status} -> ${regression.current_status}`
+          : "";
+      reasons.push(
+        `${effect}: regression ${regression.state} ${describeRegression(regression)}${transition}`,
+      );
     }
   }
 
@@ -106,6 +124,16 @@ export function evaluatePolicy(
         : blocking > 0
           ? 1
           : 0;
+  // Exits 4 and 5 are configured outcomes rather than rule effects, so they carry no
+  // blocking count. Record them explicitly or the result cannot explain its own exit.
+  if (exitCode === 4) {
+    reasons.push("EXIT 4: policy requires parseable AFDocs evidence and none is available");
+  }
+  if (exitCode === 5) {
+    reasons.push(
+      "EXIT 5: baseline comparison is incompatible and policy sets incompatible_baseline to ERROR",
+    );
+  }
   return {
     effect: blocking > 0 ? "BLOCKING" : advisory > 0 ? "ADVISORY" : "INFORMATIONAL",
     blocking,

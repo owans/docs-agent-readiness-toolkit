@@ -118,7 +118,7 @@ documented commands accept directly.
 | `live-drift` | A `DART-OPS-002` failure localized to the LIVE boundary without network access |
 | `asserted-provenance` | Asserted deployment provenance that remains unverified |
 | `external-defect` | A recorded AFDocs failure kept outside internal findings |
-| `regression` | A compatible `CHANGED` transition from `PASS` to `FAIL` |
+| `regression` | A compatible `CHANGED` transition, plus advisory and blocking policies over one bundle |
 | `incompatible-baseline` | An `INCOMPATIBLE` comparison with `RULE_VERSION_CHANGED` |
 
 ### Localize a failure
@@ -141,6 +141,42 @@ node dist/cli.js analyze \
 Replace `source-defect` with `build-defect` or `live-drift` to move the responsible
 boundary. The LIVE scenario compares captured bytes only and performs no network
 request.
+
+The remaining analyze-only scenarios use the same two commands. `external-defect`
+imports a recorded AFDocs result from the bundle; the analyzer does not run AFDocs.
+
+```bash
+node dist/cli.js bundle create \
+  --config examples/scenarios/clean-mapping/collector.json \
+  --output .artifacts/clean-mapping-bundle
+
+node dist/cli.js analyze \
+  --bundle .artifacts/clean-mapping-bundle \
+  --json .artifacts/clean-mapping.json \
+  --markdown .artifacts/clean-mapping.md
+```
+
+```bash
+node dist/cli.js bundle create \
+  --config examples/scenarios/asserted-provenance/collector.json \
+  --output .artifacts/asserted-provenance-bundle
+
+node dist/cli.js analyze \
+  --bundle .artifacts/asserted-provenance-bundle \
+  --json .artifacts/asserted-provenance.json \
+  --markdown .artifacts/asserted-provenance.md
+```
+
+```bash
+node dist/cli.js bundle create \
+  --config examples/scenarios/external-defect/collector.json \
+  --output .artifacts/external-defect-bundle
+
+node dist/cli.js analyze \
+  --bundle .artifacts/external-defect-bundle \
+  --json .artifacts/external-defect.json \
+  --markdown .artifacts/external-defect.md
+```
 
 ### Compare against a baseline
 
@@ -165,6 +201,7 @@ node dist/cli.js analyze \
 node dist/cli.js compare \
   --baseline .artifacts/regression-baseline.json \
   --current .artifacts/regression-current.json \
+  --bundle .artifacts/regression-current-bundle \
   --json .artifacts/regression-comparison.json \
   --markdown .artifacts/regression-comparison.md
 ```
@@ -175,7 +212,9 @@ than as a resolved finding.
 
 The Markdown comparison carries the compared report identities, whether the comparison
 was compatible, the count for each of the five regression states, and a line for every
-`CHANGED` transition and every `INCOMPATIBLE` entry with its reason.
+`CHANGED` transition and every `INCOMPATIBLE` entry with its reason. Passing `--bundle`
+adds the same evidence locations and locator trust that `analyze` and `ci` already
+render. Omitting it leaves those locators out.
 
 ### Reject an incompatible baseline
 
@@ -194,6 +233,7 @@ node dist/cli.js analyze \
 node dist/cli.js compare \
   --baseline examples/scenarios/incompatible-baseline/incompatible-baseline.json \
   --current .artifacts/incompatible-current.json \
+  --bundle .artifacts/incompatible-bundle \
   --json .artifacts/incompatible-comparison.json \
   --markdown .artifacts/incompatible-comparison.md
 ```
@@ -201,10 +241,37 @@ node dist/cli.js compare \
 The Markdown report names the reason as `RULE_VERSION_CHANGED`, so the incompatibility
 can be read without opening the canonical JSON.
 
-### Apply an advisory policy
+### Separate the finding from the CI decision
 
-The live drift scenario ships a trusted base root whose policy treats a
-`DART-OPS-002` failure as advisory. The finding still fails, and CI still exits 0.
+The regression scenario ships two trusted base roots that hold the same reviewed
+baseline and differ only in policy. Running the single `regression-current` bundle
+against both isolates policy as the one variable.
+
+```bash
+node dist/cli.js ci \
+  --bundle .artifacts/regression-current-bundle \
+  --trusted-base-root examples/scenarios/regression/trusted-base-advisory \
+  --json .artifacts/regression-advisory-ci.json \
+  --markdown .artifacts/regression-advisory-ci.md
+
+node dist/cli.js ci \
+  --bundle .artifacts/regression-current-bundle \
+  --trusted-base-root examples/scenarios/regression/trusted-base \
+  --json .artifacts/regression-blocking-ci.json \
+  --markdown .artifacts/regression-blocking-ci.md
+```
+
+Both runs analyze the same bundle and produce the same `report_id` and the same
+findings. The advisory policy reports `ADVISORY` and exits 0. The blocking policy reports
+`BLOCKING` and exits 1. Nothing about the evidence changed, which is what separates a
+finding status from a CI decision.
+
+Each policy section lists the results that produced its outcome, and states the reason
+for its exit code. An exit of 5 comes from baseline incompatibility rather than from a
+rule effect, so it is named explicitly instead of appearing as a blocking count.
+
+The live drift scenario ships a third trusted base whose policy treats a `DART-OPS-002`
+failure as advisory, if you want to see an advisory outcome on a different boundary.
 
 ```bash
 node dist/cli.js bundle create \
@@ -218,23 +285,23 @@ node dist/cli.js ci \
   --markdown .artifacts/live-drift-ci.md
 ```
 
-### Apply a blocking policy
+The canonical JSON, not the exit code, remains the audit record.
 
-The regression scenario ships a trusted base root that contains both a reviewed baseline
-and a policy that blocks on `CHANGED` regressions and `DART-OPS-001` failures. The same
-evidence now exits 1.
+### Create your own trusted baseline
+
+A trusted base root is a directory containing `.docs-agent-readiness/policy.json` and,
+when the policy sets `baseline_path`, the reviewed baseline it names. Use
+`baseline create` to produce that baseline from a reviewed analysis report.
 
 ```bash
-node dist/cli.js ci \
-  --bundle .artifacts/regression-current-bundle \
-  --trusted-base-root examples/scenarios/regression/trusted-base \
-  --json .artifacts/regression-ci.json \
-  --markdown .artifacts/regression-ci.md
+node dist/cli.js baseline create \
+  --report .artifacts/regression-baseline.json \
+  --output .artifacts/my-baseline.json
 ```
 
-The two policy runs differ only in configuration, which is what separates a finding
-status from a CI decision. The canonical JSON, not the exit code, remains the audit
-record.
+The command revalidates the report, writes it as canonical JSON, and prints its
+`report_id`. Review a baseline before trusting it, and keep policy and baseline changes
+under separate approval from the changes they judge.
 
 ## Evidence model
 

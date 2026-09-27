@@ -8,6 +8,7 @@ import type {
   RegressionState,
 } from "./contracts.js";
 import type { Finding, TrustedValue } from "./contracts.js";
+import { describeRegression } from "./policy.js";
 import { validateSchema } from "./schema.js";
 import { readBoundedFile, readSafeFile } from "./security/paths.js";
 import { markdownText } from "./security/sanitize.js";
@@ -17,6 +18,20 @@ import { markdownText } from "./security/sanitize.js";
  * filesystem; callers supply locators from a loaded bundle manifest.
  */
 export type EvidenceLocators = Record<string, TrustedValue>;
+
+/**
+ * Fixed render order. A report parsed from canonical JSON has alphabetically sorted
+ * keys, so relying on key order would make the same report render differently
+ * depending on where it came from.
+ */
+const COMPLETENESS_ORDER: (keyof AnalysisReport["evidence_completeness"])[] = [
+  "SOURCE",
+  "BUILD",
+  "LIVE",
+  "RUNTIME_OBSERVATION",
+  "TASK_EVALUATION",
+  "EXTERNAL",
+];
 
 export async function writeCanonicalJson(path: string, value: unknown): Promise<void> {
   await writeFile(path, canonicalJson(value), { encoding: "utf8", flag: "wx" });
@@ -76,16 +91,28 @@ function valueLines(label: string, value: unknown): string[] {
     .map(([key, entry]) => `- ${label} ${markdownText(key)}: ${scalarText(entry)}`);
 }
 
+function exitCodeExplanation(policy: PolicyResult): string {
+  switch (policy.exit_code) {
+    case 0:
+      return "no blocking policy result";
+    case 1:
+      return `${policy.blocking} blocking policy result${policy.blocking === 1 ? "" : "s"}`;
+    case 4:
+      return "required recorded evaluator evidence is unavailable, which is configured as an error";
+    default:
+      return "the baseline comparison is incompatible, which is configured as an error";
+  }
+}
+
 function findingLines(finding: Finding, locators: EvidenceLocators): string[] {
   const lines = [
     "",
-    `### ${markdownText(finding.rule_id)}: ${markdownText(finding.title)}`,
+    `### ${markdownText(finding.rule_id)} ${markdownText(finding.sub_identity)}: ${markdownText(finding.title)}`,
     "",
     `- Status: ${finding.status}`,
     `- Severity: ${finding.severity}`,
-    `- Target: \`${markdownText(finding.target.identity)}\` (${finding.target.kind})`,
+    `- Declared target: \`${markdownText(finding.target.identity)}\` (${finding.target.kind})`,
     `- Sub-identity: \`${markdownText(finding.sub_identity)}\``,
-    `- Evidence mode: ${finding.evidence_mode}`,
     `- Evidence boundary: ${finding.responsible_boundary ?? "none"}`,
     `- Identity: ${finding.identity_status}`,
     `- Fact: ${markdownText(finding.deterministic_fact)}`,
@@ -160,14 +187,20 @@ export function renderMarkdownReport(
     "",
     "| Evidence | Completeness |",
     "| --- | --- |",
-    ...Object.entries(report.evidence_completeness).map(
-      ([mode, state]) => `| ${markdownText(mode)} | ${markdownText(state)} |`,
+    ...COMPLETENESS_ORDER.map(
+      (mode) =>
+        `| ${mode} | ${markdownText(report.evidence_completeness[mode] ?? "NOT_REQUESTED")} |`,
     ),
     "",
     "## Findings",
     "",
-    "Counts summarize status only. A status is not a policy decision, and a passing",
-    "status does not establish authenticity, freshness, or lineage.",
+    "Counts summarize status only. A status is not a policy decision. PASS is a check",
+    "status, not approval of origin, freshness, lineage, or deployment. Imported",
+    "evaluator results are counted separately under external evaluations and never",
+    "appear here.",
+    "",
+    "A declared target names the endpoint the rule evaluated, which on a failure is the",
+    "evidence that was present. The fact line names the side that is absent.",
     "",
     ...findingStatuses.map((status) => `- ${status}: ${findingCounts[status]}`),
   ];
@@ -217,12 +250,12 @@ export function renderMarkdownReport(
     for (const regression of comparison.regressions) {
       if (regression.state === "CHANGED") {
         lines.push(
-          `- CHANGED ${markdownText(regression.fingerprint)}: ${regression.previous_status} -> ${regression.current_status}`,
+          `- CHANGED ${markdownText(describeRegression(regression))}: ${regression.previous_status} -> ${regression.current_status}`,
         );
       }
       if (regression.state === "INCOMPATIBLE") {
         lines.push(
-          `- INCOMPATIBLE ${markdownText(regression.fingerprint)}: ${regression.reason ?? "unspecified"}`,
+          `- INCOMPATIBLE (${markdownText(describeRegression(regression))}): ${regression.reason ?? "unspecified"}`,
         );
       }
     }
@@ -233,13 +266,24 @@ export function renderMarkdownReport(
       "",
       "## Policy",
       "",
+      "Policy turns findings and regression states into a CI outcome. The effect and the",
+      "counts below describe matched rules only.",
+      "",
       `- Effect: ${policy.effect}`,
       `- Blocking: ${policy.blocking}`,
       `- Advisory: ${policy.advisory}`,
       `- Informational: ${policy.informational}`,
       `- Exit code: ${policy.exit_code}`,
+    );
+    if (policy.reasons.length > 0) {
+      lines.push("", "Reasons:", "");
+      for (const reason of policy.reasons) {
+        lines.push(`- ${markdownText(reason)}`);
+      }
+    }
+    lines.push(
       "",
-      `Result: ${policy.exit_code === 0 ? "ALLOWED" : "BLOCKED"}`,
+      `Result: ${policy.exit_code === 0 ? "ALLOWED" : "BLOCKED"} (${exitCodeExplanation(policy)})`,
     );
   }
   return `${lines.join("\n")}\n`;

@@ -6,10 +6,10 @@ localization, and replay claims.
 ## Status
 
 This protocol defines practitioner validation for the evidence/replay prototype. A first
-pilot has been run and is recorded in
-[`practitioner-validation-results.md`](practitioner-validation-results.md). The full
-fixture set was not exercised, and acceptance thresholds remain
-`STAKEHOLDER_REQUIRED`.
+pilot and a later full-fixture session set are recorded in
+[`practitioner-validation-results.md`](practitioner-validation-results.md). The
+threshold table was approved on 2026-09-27. A re-run is still required before the
+protocol can be treated as complete.
 
 The product hypothesis is:
 
@@ -80,7 +80,9 @@ Record:
 
 - task completion;
 - correct responsible-boundary localization;
-- correct evidence citation;
+- correct evidence citation, meaning the participant named the evidence ID, locator
+  value, locator trust, and digest from the Markdown report, and the cited record is
+  the one the finding's fact depends on;
 - time to first correct diagnosis;
 - time to identify the likely cause;
 - time to choose a valid next action;
@@ -112,24 +114,21 @@ Prototype validation can support further investment only if:
 - the report supplies enough evidence to reproduce the diagnosis offline;
 - terminology problems are documented and corrected before adding features.
 
-Numeric thresholds must be set after pilot sessions establish a baseline. Until then,
-all criteria requiring human performance remain `STAKEHOLDER_REQUIRED`.
+The repository owner approved the following numeric thresholds on 2026-09-27. They are
+the acceptance bar for a later re-run. They are not a claim that the recorded sessions
+met them. Time to first correct diagnosis remains recorded without a numeric bar.
 
-### Proposed thresholds
+### Approved thresholds
 
-The first pilot established a baseline, so the following thresholds are proposed for
-owner approval. They are not agreed acceptance criteria and remain
-`STAKEHOLDER_REQUIRED` until approved and recorded as such.
-
-| Measure | Proposed threshold |
+| Measure | Approved threshold |
 | --- | --- |
 | Correct responsible-boundary localization | 3 of 3 participants per defect fixture |
 | Incorrect authenticity or lineage claims | 0 across all participants |
 | Imported evaluator results read as internal findings | 0 across all participants |
 | Incompatible baseline read as new or resolved | 0 across all participants |
 | Correct evidence citation from the three Markdown reports alone | 3 of 3 participants |
-| Time to first correct diagnosis | Recorded per fixture, no threshold until a second pilot |
-| Unresolved terminology problems at session end | 0 before further feature work |
+| Time to first correct diagnosis | Recorded per fixture, no numeric threshold |
+| Unresolved terminology problems carried over from a prior session | 0 before further feature work |
 
 Do not convert an approved threshold set into a readiness score.
 
@@ -154,7 +153,8 @@ Store no credentials, private source, or full environment information.
 Publish an anonymized synthesis only after consent and review. Separate observed session
 results from facilitator inference and product recommendations.
 
-Current result: `PILOT_COMPLETE`. The first pilot is recorded in
-[`practitioner-validation-results.md`](practitioner-validation-results.md). Four of the
-six success criteria remain `NOT_EVALUATED`, so this document and that record are not
-evidence that the prototype passed practitioner validation.
+Current result: `PILOT_COMPLETE`. The recorded sessions are in
+[`practitioner-validation-results.md`](practitioner-validation-results.md). A later
+session set exercised the full fixture set with all three required roles. This
+document and that record are not evidence that the prototype passed practitioner
+validation.

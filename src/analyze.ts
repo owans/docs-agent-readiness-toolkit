@@ -113,7 +113,7 @@ function sourceBuildFinding(
     category: "operational-readiness",
     severity: "high",
     status,
-    title: "Explicit source-to-build identity",
+    title: "Explicit source-to-build mapping",
     deterministic_fact: sanitizeText(fact),
     target,
     sub_identity: mapping.id,
@@ -142,7 +142,7 @@ function sourceBuildFinding(
         : [],
     recommended_fix:
       status === "PASS"
-        ? "No remediation required."
+        ? "No defect was observed. Authenticity, freshness, and lineage remain as recorded; this status is not an approval."
         : "Review the explicit mapping and the missing evidence boundary.",
     validation_method: "Recreate the bundle and replay DART-OPS-001.",
     regression_test_suggestion: "Keep this mapping as a source-to-build fixture.",
@@ -185,7 +185,7 @@ function buildLiveFinding(
     category: "operational-readiness",
     severity: "critical",
     status,
-    title: "Build-to-recorded-live identity",
+    title: "Build-to-recorded-live mapping",
     deterministic_fact: sanitizeText(fact),
     target,
     sub_identity: mapping.id,
@@ -211,7 +211,7 @@ function buildLiveFinding(
     recommended_fix:
       status === "FAIL"
         ? "Verify deployment identity and recorded content before changing source."
-        : "No content remediation required.",
+        : "No defect was observed. Authenticity, freshness, and lineage remain as recorded; this status is not an approval.",
     validation_method: "Import a new LIVE capture and replay without network access.",
     regression_test_suggestion: "Retain paired BUILD and LIVE blobs as a drift canary.",
     fingerprint: fingerprint("DART-OPS-002", target, mapping.id),
@@ -256,7 +256,7 @@ function provenanceFinding(evidence: Evidence): Finding {
     expected_value: { integrity: "MATCHED", provenance_recorded: true },
     likely_causes: [],
     recommended_fix: complete
-      ? "No remediation required."
+      ? "No defect was observed. Authenticity, freshness, and lineage remain as recorded; this status is not an approval."
       : "Supply provenance metadata without upgrading its trust.",
     validation_method: "Verify the bundle and inspect trust labels.",
     regression_test_suggestion: "Keep asserted and attested provenance fixtures separate.",

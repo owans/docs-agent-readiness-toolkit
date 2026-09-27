@@ -14,12 +14,16 @@ Run them with the scenario walkthrough in `docs/phase3/README.md`.
 | `live-drift` | A `DART-OPS-002` failure localized to the LIVE boundary, plus an advisory policy |
 | `asserted-provenance` | Asserted deployment provenance that remains unverified |
 | `external-defect` | A recorded AFDocs failure kept outside internal findings |
-| `regression` | A compatible `CHANGED` transition, a reviewed baseline, and a blocking policy |
+| `regression` | A compatible `CHANGED` transition, a reviewed baseline, and advisory and blocking policies over the same bundle |
 | `incompatible-baseline` | An `INCOMPATIBLE` comparison with `RULE_VERSION_CHANGED` |
 
 A `.gitkeep` file marks an evidence root that is intentionally empty, which is how the
 source and build boundary defects are represented.
 
-The committed reports under `incompatible-baseline` and `regression/trusted-base` are
-generated from these inputs. `tests/example-scenarios.test.ts` fails if a scenario stops
-reproducing the behavior its fixture defines.
+The committed reports under `incompatible-baseline`, `regression/trusted-base`, and
+`regression/trusted-base-advisory` are generated from these inputs.
+`tests/example-scenarios.test.ts` fails if a scenario stops reproducing the behavior its
+fixture defines.
+
+The two regression trusted bases hold an identical baseline and differ only in policy
+effects, so the same bundle can be evaluated under both.
