@@ -59,8 +59,9 @@ invalidate comparisons.
 
 Use direct, evidence-backed language. Do not claim production readiness, complete
 security, universal agent success, live coverage, or human validation without the
-required evidence. Practitioner validation has completed a first pilot only, and four of
-its six success criteria remain unevaluated.
+required evidence. Practitioner validation has completed a first pilot and a later
+fixture-set rerun with all three required roles. The threshold table is approved. It is
+not complete, and the recorded results are not an acceptance decision.
 
 Local documentation links must resolve. Official external links that reject automated
 clients may be documented rather than replaced when they are valid in a browser.

@@ -176,12 +176,14 @@ describe("policy and reports", () => {
     const scenario = await readScenario<Scenario>("canaries/03-representation-mapping");
     const run = await materializeRun(scenario);
     try {
-      expect(
-        evaluatePolicy(run.report, undefined, {
-          ...noBlockPolicy,
-          external_afdocs_required: true,
-        }).exit_code,
-      ).toBe(4);
+      const result = evaluatePolicy(run.report, undefined, {
+        ...noBlockPolicy,
+        external_afdocs_required: true,
+      });
+      expect(result.exit_code).toBe(4);
+      expect(result.reasons).toContain(
+        "EXIT 4: policy requires parseable AFDocs evidence and none is available",
+      );
     } finally {
       await run.cleanup();
     }
@@ -204,12 +206,26 @@ describe("policy and reports", () => {
           },
         ],
       };
-      expect(
-        evaluatePolicy(run.report, comparison, {
-          ...noBlockPolicy,
-          incompatible_baseline: "ERROR",
-        }).exit_code,
-      ).toBe(5);
+      const result = evaluatePolicy(run.report, comparison, {
+        ...noBlockPolicy,
+        incompatible_baseline: "ERROR",
+      });
+      expect(result.exit_code).toBe(5);
+      expect(result.reasons).toContain(
+        "EXIT 5: baseline comparison is incompatible and policy sets incompatible_baseline to ERROR",
+      );
+      const markdown = renderMarkdownReport(run.report, comparison, result);
+      expect(markdown).toContain("## Policy");
+      expect(markdown).toContain("- Effect: INFORMATIONAL");
+      expect(markdown).toContain("- Blocking: 0");
+      expect(markdown).toContain("- Exit code: 5");
+      expect(markdown).toContain(
+        "EXIT 5: baseline comparison is incompatible and policy sets incompatible_baseline to ERROR",
+      );
+      expect(markdown).toContain(
+        "Result: BLOCKED (the baseline comparison is incompatible, which is configured as an error)",
+      );
+      expect(markdown).toContain("INCOMPATIBLE (whole comparison): RULE_VERSION_CHANGED");
     } finally {
       await run.cleanup();
     }

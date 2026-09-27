@@ -84,6 +84,20 @@ async function emit(
   }
 }
 
+/** Output paths are never overwritten, so say what to do instead of surfacing EEXIST. */
+function existingOutputMessage(error: unknown): string | undefined {
+  if (
+    error instanceof Error &&
+    "code" in error &&
+    error.code === "EEXIST" &&
+    "path" in error &&
+    typeof error.path === "string"
+  ) {
+    return `Refusing to overwrite an existing output file: ${sanitizeText(error.path)}. Choose a new output path or remove the existing file.`;
+  }
+  return undefined;
+}
+
 async function runBundle(args: string[], output: Output): Promise<number> {
   const action = args[0];
   const options = parseOptions(args.slice(1));
@@ -91,9 +105,10 @@ async function runBundle(args: string[], output: Output): Promise<number> {
     rejectUnknown(options, ["--config", "--output"]);
     const outputPath = required(options, "--output");
     const result = await collectEvidenceBundle(required(options, "--config"), outputPath);
-    output.stdout(`${result.bundleId}\n`);
+    const count = result.manifest.evidence.length;
+    output.stdout(`Bundle ID: ${result.bundleId}\n`);
     output.stdout(
-      `Collected ${result.manifest.evidence.length} evidence records into ${sanitizeText(outputPath)}\n`,
+      `Collected ${count} evidence record${count === 1 ? "" : "s"} into ${sanitizeText(outputPath)}\n`,
     );
     return 0;
   }
@@ -106,17 +121,27 @@ async function runBundle(args: string[], output: Output): Promise<number> {
   throw new UsageError("Usage: bundle create|verify");
 }
 
+function bundleLocators(bundle: Awaited<ReturnType<typeof loadEvidenceBundle>>): EvidenceLocators {
+  return Object.fromEntries(
+    bundle.manifest.evidence.flatMap((evidence) =>
+      evidence.provenance.source ? [[evidence.id, evidence.provenance.source] as const] : [],
+    ),
+  );
+}
+
+async function locatorsFromBundlePath(bundlePath: string | undefined): Promise<EvidenceLocators> {
+  if (!bundlePath) {
+    return {};
+  }
+  return bundleLocators(await loadEvidenceBundle(bundlePath));
+}
+
 async function analyzeFromPath(bundlePath: string) {
   const bundle = await loadEvidenceBundle(bundlePath);
   const external = await importRecordedAfdocs(bundle);
   const report = analyzeBundle(bundle, external);
   await validateSchema("analysis-report", report);
-  const locators: EvidenceLocators = Object.fromEntries(
-    bundle.manifest.evidence.flatMap((evidence) =>
-      evidence.provenance.source ? [[evidence.id, evidence.provenance.source] as const] : [],
-    ),
-  );
-  return { report, locators };
+  return { report, locators: bundleLocators(bundle) };
 }
 
 async function runAnalyze(args: string[], output: Output): Promise<number> {
@@ -135,7 +160,7 @@ async function runAnalyze(args: string[], output: Output): Promise<number> {
 
 async function runCompare(args: string[], output: Output): Promise<number> {
   const options = parseOptions(args);
-  rejectUnknown(options, ["--baseline", "--current", "--json", "--markdown"]);
+  rejectUnknown(options, ["--baseline", "--current", "--json", "--markdown", "--bundle"]);
   const baseline = await loadAnalysisReport(required(options, "--baseline"));
   const current = await loadAnalysisReport(required(options, "--current"));
   const comparison = compareReports(baseline, current);
@@ -143,7 +168,12 @@ async function runCompare(args: string[], output: Output): Promise<number> {
   await emit(
     comparison,
     options.get("--json"),
-    renderMarkdownReport(current, comparison),
+    renderMarkdownReport(
+      current,
+      comparison,
+      undefined,
+      await locatorsFromBundlePath(options.get("--bundle")),
+    ),
     options.get("--markdown"),
     output,
   );
@@ -212,7 +242,10 @@ export async function runCli(args: string[], output: Output = processOutput): Pr
   try {
     return await dispatch(args, output);
   } catch (error) {
-    output.stderr(`${sanitizeText(error instanceof Error ? error.message : "Unknown error")}\n`);
+    const existingOutput = existingOutputMessage(error);
+    output.stderr(
+      `${existingOutput ?? sanitizeText(error instanceof Error ? error.message : "Unknown error")}\n`,
+    );
     if (error instanceof UsageError) {
       return 2;
     }

@@ -27,7 +27,8 @@ Status: current.
 - Cross-mode canaries and localization: complete for the prototype.
 - Baseline comparison and CI policy: complete for the prototype.
 - Recorded AFDocs import: complete for the evidenced 0.18.7 shape.
-- Practitioner validation: first pilot complete, full protocol not yet run.
+- Practitioner validation: first pilot complete; a later session set exercised the
+  full fixture set with all three required roles. The protocol is not complete.
 - Bounded live acquisition: gated and not implemented.
 - Framework adapters: future and demand-led.
 
@@ -49,9 +50,10 @@ recorded in the
 2. a documentation engineer responsible for generation or deployment;
 3. a DevEx or platform engineer responsible for CI policy.
 
-The pilot covered only the defect-free example, so four of the six success criteria
-remain unevaluated. The gate stays open until the recorded reporting and terminology
-problems are corrected and the protocol is re-run against the full fixture set.
+A later session set exercised the full fixture set with all three required roles.
+The threshold table is approved. Three criteria now have passing observations. Two
+remain conditional until practitioners re-run the corrected `ci` and `compare
+--markdown` paths. The gate stays open.
 
 Do not represent simulated sessions as human validation. Do not begin live acquisition
 until its security matrix is executable and approved.

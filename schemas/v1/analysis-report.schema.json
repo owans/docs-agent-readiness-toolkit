@@ -113,9 +113,17 @@
           "deterministic_fact": { "type": "string" },
           "target": { "$ref": "#/definitions/target" },
           "sub_identity": { "type": "string" },
-          "evidence_mode": { "$ref": "#/definitions/mode" },
+          "evidence_mode": {
+            "$ref": "#/definitions/mode",
+            "description": "Evidence mode the rule evaluated for this finding. It describes the rule's scope, not which boundary is responsible for a failure."
+          },
           "responsible_boundary": {
-            "anyOf": [{ "$ref": "#/definitions/mode" }, { "const": "EXTERNAL" }, { "type": "null" }]
+            "anyOf": [
+              { "$ref": "#/definitions/mode" },
+              { "const": "EXTERNAL" },
+              { "type": "null" }
+            ],
+            "description": "Boundary that must be corrected. Null when the finding does not report a defect, because no boundary is responsible when nothing failed."
           },
           "identity_status": {
             "enum": [

@@ -29,6 +29,14 @@ capabilities.
   incompatible baseline, and both CI policy outcomes.
 - A `--markdown` option on `compare`, so regression states and compatibility reasons can
   be read without opening canonical JSON.
+- An optional `--bundle` on `compare`, so Markdown comparisons can render evidence
+  locations and locator trust.
+- A second regression trusted base whose policy treats the same findings as advisory,
+  so one bundle can demonstrate both CI outcomes.
+- Anonymized practitioner validation results for the second-iteration technical
+  writer, documentation engineer, and senior platform engineer sessions.
+- Walkthrough commands for `clean-mapping`, `asserted-provenance`, and
+  `external-defect`.
 
 ### Changed
 
@@ -47,6 +55,25 @@ the detail the human-readable report carries.
   reports without changing any compatibility digest.
 - The Markdown regression section now reports the compared report identities, whether the
   comparison was compatible, and the reason for every `INCOMPATIBLE` entry.
+- The `DART-OPS-001` and `DART-OPS-002` titles name declared mappings rather than
+  identity, so a passing `IDENTITY_ASSERTED` result is not read as established identity.
+  Titles are not fingerprint inputs, but `report_id` changes for affected reports.
+- Finding headings include the sub-identity so repeated `DART-OPS-003` sections remain
+  unique.
+- The evidence-completeness table always renders in canonical mode order.
+- The Policy section lists matched-rule reasons and names the configured cause of
+  exits 4 and 5.
+- The walkthrough evaluates one regression bundle under both trusted policies and
+  documents `baseline create`.
+- The practitioner protocol defines a correct evidence citation and scopes the
+  terminology threshold to unresolved problems carried over from a prior session.
+- The repository owner approved the practitioner threshold table on 2026-09-27. That
+  approval is the bar for a later re-run and does not close the recorded sessions.
+- Markdown `CHANGED` and finding-level `INCOMPATIBLE` lines name the rule, sub-identity,
+  and declared target instead of a finding hash. Policy regression reasons use the
+  same labels.
+- Passing findings no longer recommend `No remediation required`. The Findings section
+  states that `PASS` is a check status, not approval.
 
 ### Deprecated
 
@@ -72,6 +99,10 @@ pilot recorded.
 - Resolved the disagreement between the Markdown-first validation protocol and a
   JSON-only `compare` command, which blocked a practitioner session. The protocol now
   names the three Markdown reports that cover its tasks.
+- The Policy section no longer prints `Result: BLOCKED` next to `Blocking: 0` without
+  naming baseline incompatibility or unavailable required evaluator evidence.
+- `bundle create` labels the bundle digest, pluralizes the evidence-record count, and
+  names an existing output path instead of surfacing a raw `EEXIST` error.
 
 ### Security
 
