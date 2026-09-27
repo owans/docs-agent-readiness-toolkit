@@ -165,12 +165,17 @@ node dist/cli.js analyze \
 node dist/cli.js compare \
   --baseline .artifacts/regression-baseline.json \
   --current .artifacts/regression-current.json \
-  --json .artifacts/regression-comparison.json
+  --json .artifacts/regression-comparison.json \
+  --markdown .artifacts/regression-comparison.md
 ```
 
 The result contains a `CHANGED` transition that retains `previous_status` and
 `current_status`. Missing build evidence appears as `CHANGED` to `UNAVAILABLE` rather
 than as a resolved finding.
+
+The Markdown comparison carries the compared report identities, whether the comparison
+was compatible, the count for each of the five regression states, and a line for every
+`CHANGED` transition and every `INCOMPATIBLE` entry with its reason.
 
 ### Reject an incompatible baseline
 
@@ -189,8 +194,12 @@ node dist/cli.js analyze \
 node dist/cli.js compare \
   --baseline examples/scenarios/incompatible-baseline/incompatible-baseline.json \
   --current .artifacts/incompatible-current.json \
-  --json .artifacts/incompatible-comparison.json
+  --json .artifacts/incompatible-comparison.json \
+  --markdown .artifacts/incompatible-comparison.md
 ```
+
+The Markdown report names the reason as `RULE_VERSION_CHANGED`, so the incompatibility
+can be read without opening the canonical JSON.
 
 ### Apply an advisory policy
 

@@ -1,9 +1,10 @@
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { importRecordedAfdocs } from "../src/afdocs.js";
 import { analyzeBundle } from "../src/analyze.js";
+import { runCli } from "../src/cli.js";
 import { compareReports } from "../src/compare.js";
 import type { AnalysisReport } from "../src/contracts.js";
 import { collectEvidenceBundle, loadEvidenceBundle } from "../src/evidence.js";
@@ -46,6 +47,30 @@ async function analyzeScenario(
   options: { external?: boolean } = {},
 ): Promise<AnalysisReport> {
   return (await runScenario(relativePath, options)).report;
+}
+
+const cliSink = { stdout: () => undefined, stderr: () => undefined };
+
+async function analyzeScenarioToFile(
+  root: string,
+  relativePath: string,
+  name: string,
+): Promise<string> {
+  const bundlePath = path.join(root, `${name}-bundle`);
+  const reportPath = path.join(root, `${name}.json`);
+  await runCli(
+    [
+      "bundle",
+      "create",
+      "--config",
+      path.join(scenarioRoot, relativePath, "collector.json"),
+      "--output",
+      bundlePath,
+    ],
+    cliSink,
+  );
+  await runCli(["analyze", "--bundle", bundlePath, "--json", reportPath], cliSink);
+  return reportPath;
 }
 
 describe("committed practitioner scenarios", () => {
@@ -160,6 +185,68 @@ describe("committed practitioner scenarios", () => {
       "at `SOURCE:docs/getting-started.md` (locator trust OBSERVED_BY_COLLECTOR)",
     );
     expect(markdown).not.toContain("readiness score");
+  });
+
+  it("writes a Markdown comparison for a compatible regression pair", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "dart-compare-md-"));
+    try {
+      const baseline = await analyzeScenarioToFile(root, "regression/baseline", "baseline");
+      const current = await analyzeScenarioToFile(root, "regression/current", "current");
+      const markdownPath = path.join(root, "comparison.md");
+      const code = await runCli(
+        [
+          "compare",
+          "--baseline",
+          baseline,
+          "--current",
+          current,
+          "--json",
+          path.join(root, "comparison.json"),
+          "--markdown",
+          markdownPath,
+        ],
+        cliSink,
+      );
+      expect(code).toBe(0);
+      const markdown = await readFile(markdownPath, "utf8");
+      expect(markdown).toContain("## Regression");
+      expect(markdown).toContain("- Compatible: true");
+      expect(markdown).toContain("- CHANGED: 2");
+      expect(markdown).toContain("PASS -> FAIL");
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("names the incompatibility reason in the Markdown comparison", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "dart-compare-md-"));
+    try {
+      const current = await analyzeScenarioToFile(root, "incompatible-baseline", "current");
+      const markdownPath = path.join(root, "comparison.md");
+      const code = await runCli(
+        [
+          "compare",
+          "--baseline",
+          path.join(scenarioRoot, "incompatible-baseline", "incompatible-baseline.json"),
+          "--current",
+          current,
+          "--json",
+          path.join(root, "comparison.json"),
+          "--markdown",
+          markdownPath,
+        ],
+        cliSink,
+      );
+      expect(code).toBe(5);
+      const markdown = await readFile(markdownPath, "utf8");
+      expect(markdown).toContain("- Compatible: false");
+      expect(markdown).toContain("- INCOMPATIBLE: 1");
+      expect(markdown).toContain("RULE_VERSION_CHANGED");
+      expect(markdown).not.toContain("- NEW: 1");
+      expect(markdown).not.toContain("- RESOLVED: 1");
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
   });
 
   it("classifies the committed incompatible baseline without inventing state", async () => {

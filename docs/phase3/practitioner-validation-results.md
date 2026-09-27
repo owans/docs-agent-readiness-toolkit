@@ -1,19 +1,27 @@
 # Practitioner Validation Results
 
-This document records the first practitioner sessions run against the evidence and
-replay prototype. It reports what participants did and said, then separates facilitator
+This document records the practitioner sessions run against the evidence and replay
+prototype. It reports what participants did and said, then separates facilitator
 inference and product recommendations from those observations.
+
+Sessions are grouped into session sets. The first set is the pilot. A later set follows
+in its own section and does not modify the pilot record.
 
 ## Status
 
-Three sessions were run with the three roles the protocol requires. The sessions covered
-only the minimal Quick Start example, so the full fixture set defined in
+Three pilot sessions were run with the three roles the protocol requires. Those sessions
+covered only the minimal Quick Start example, so the full fixture set defined in
 [`practitioner-validation-protocol.md`](practitioner-validation-protocol.md) was not
-exercised.
+exercised. A second set began after the pilot remediation and stopped at a blocker.
 
 Current result: `PILOT_COMPLETE`. The full protocol remains unexecuted, four of the six
 success criteria remain `NOT_EVALUATED`, and this document is not evidence that the
 prototype passed practitioner validation.
+
+## First session set: pilot
+
+The pilot sessions and their outcomes are recorded in the sections that follow, through
+to the pilot's product recommendations.
 
 ## Sessions
 
@@ -167,12 +175,68 @@ as agreed scope.
    correct the wording problems listed above.
 5. Document why a passing finding carries no responsible boundary and no likely cause.
 
+## Second session set: stopped at a blocker
+
+This set began after the pilot remediation added runnable scenarios. It produced no task
+outcomes, so it upgrades no success criterion.
+
+| Participant | Role | Date | Duration | Quick Start completed | Walkthrough completed |
+| --- | --- | --- | --- | --- | --- |
+| P4 | Documentation engineer | 2026-09-27 | About 1 minute before the blocker | Yes | No |
+
+### Observed progress
+
+The participant completed the Quick Start and confirmed the pilot fixes: file output was
+named on the command line, and no redundant standalone build step was required.
+
+Reports were then generated successfully for `clean-mapping`, `source-defect`,
+`build-defect`, `live-drift`, `asserted-provenance`, `external-defect`, and both the
+regression baseline and regression current runs.
+
+### Observed blocker
+
+Attempting a Markdown comparison report returned `Unknown option: --markdown`. The
+walkthrough documented only JSON output for `compare`, while the protocol asked for
+Markdown-first evaluation and included a Markdown-only evidence-citation criterion. The
+participant stopped rather than devising a workaround, as the protocol instructs.
+
+### Tasks not evaluated
+
+Because the session stopped before report evaluation, these produced no outcome:
+
+- regression comparison inspection;
+- incompatible-baseline execution;
+- the advisory CI run;
+- the blocking CI run;
+- the ten-task evaluation;
+- evidence-based diagnosis across all eight scenarios.
+
+### Facilitator inference on the blocker
+
+This section is interpretation, not observed session data.
+
+The protocol and the CLI described different evaluation paths, and the participant was
+correct to treat that as a blocker. A second defect sat behind the reported one: the
+Markdown regression section printed state counts and `CHANGED` transitions but never the
+compatibility reason, so `RULE_VERSION_CHANGED` could not be read from Markdown even
+through `ci`. Protocol task 6 and the success criterion about incompatible baselines both
+depend on that reason, so neither could have been assessed from Markdown as written.
+
+### Corrections applied
+
+`compare` now accepts `--markdown` and renders the current report with its regression
+section. The regression section names the compared report identities, whether the
+comparison was compatible, and the reason for every `INCOMPATIBLE` entry. The protocol
+now names the three Markdown reports that cover its tasks, and the walkthrough passes
+`--markdown` at both comparison steps.
+
 ## Next round
 
-The protocol defers numeric thresholds until a pilot establishes a baseline. This pilot
+The protocol defers numeric thresholds until a pilot establishes a baseline. The pilot
 provides that baseline, so proposed thresholds can now be drafted for owner approval and
 remain `STAKEHOLDER_REQUIRED` until approved.
 
-Re-run the full protocol with the complete fixture set and the same three roles after the
-recorded terminology and reporting problems are corrected. The controlled comparison
-study described in the protocol remains future work.
+Re-run the full protocol with the complete fixture set and the three required roles now
+that the comparison reporting gap is closed. Generate all three Markdown reports before
+each session. The controlled comparison study described in the protocol remains future
+work.
