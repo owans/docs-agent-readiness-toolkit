@@ -5,8 +5,10 @@ localization, and replay claims.
 
 ## Status
 
-This protocol defines practitioner validation for the evidence/replay prototype. Real
-human sessions have not been run. Results and acceptance thresholds remain
+This protocol defines practitioner validation for the evidence/replay prototype. A first
+pilot has been run and is recorded in
+[`practitioner-validation-results.md`](practitioner-validation-results.md). The full
+fixture set was not exercised, and acceptance thresholds remain
 `STAKEHOLDER_REQUIRED`.
 
 The product hypothesis is:
@@ -103,6 +105,24 @@ Prototype validation can support further investment only if:
 Numeric thresholds must be set after pilot sessions establish a baseline. Until then,
 all criteria requiring human performance remain `STAKEHOLDER_REQUIRED`.
 
+### Proposed thresholds
+
+The first pilot established a baseline, so the following thresholds are proposed for
+owner approval. They are not agreed acceptance criteria and remain
+`STAKEHOLDER_REQUIRED` until approved and recorded as such.
+
+| Measure | Proposed threshold |
+| --- | --- |
+| Correct responsible-boundary localization | 3 of 3 participants per defect fixture |
+| Incorrect authenticity or lineage claims | 0 across all participants |
+| Imported evaluator results read as internal findings | 0 across all participants |
+| Incompatible baseline read as new or resolved | 0 across all participants |
+| Correct evidence citation from the Markdown report alone | 3 of 3 participants |
+| Time to first correct diagnosis | Recorded per fixture, no threshold until a second pilot |
+| Unresolved terminology problems at session end | 0 before further feature work |
+
+Do not convert an approved threshold set into a readiness score.
+
 ## Session record
 
 For each session, record:
@@ -124,5 +144,7 @@ Store no credentials, private source, or full environment information.
 Publish an anonymized synthesis only after consent and review. Separate observed session
 results from facilitator inference and product recommendations.
 
-Current result: `NOT_RUN`. This document is the agreed protocol, not evidence of human
-validation.
+Current result: `PILOT_COMPLETE`. The first pilot is recorded in
+[`practitioner-validation-results.md`](practitioner-validation-results.md). Four of the
+six success criteria remain `NOT_EVALUATED`, so this document and that record are not
+evidence that the prototype passed practitioner validation.

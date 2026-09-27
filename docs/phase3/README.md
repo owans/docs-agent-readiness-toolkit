@@ -77,7 +77,8 @@ npm run check
 ```
 
 `npm run check` runs formatting verification, lint, strict type checking, tests, and a
-TypeScript build.
+TypeScript build. Because it ends in a build, `dist/cli.js` is ready to run and no
+separate `npm run build` step is required.
 
 ## Minimal local example
 
@@ -85,8 +86,6 @@ The following commands create and analyze a bundle using only the committed loca
 example inputs.
 
 ```bash
-npm run build
-
 node dist/cli.js bundle create \
   --config examples/minimal/collector.json \
   --output .artifacts/example-bundle
@@ -98,7 +97,135 @@ node dist/cli.js analyze \
 ```
 
 The collector reads only the explicit entries in `collector.json`. It does not run a
-documentation build.
+documentation build. Each command reports the bundle or report it wrote, and existing
+output paths are never overwritten, so repeat a step with a new path or remove the
+previous file first.
+
+This example is defect free by design, so every finding passes. Use the scenario
+walkthrough below to exercise failure localization, regression comparison, and policy.
+
+## Scenario walkthrough
+
+The committed scenarios under `examples/scenarios/` turn the acceptance fixtures into
+runnable material. Each directory holds the input files and a `collector.json` that the
+documented commands accept directly.
+
+| Scenario | Demonstrates |
+| --- | --- |
+| `clean-mapping` | An explicit mapping that passes and stays `IDENTITY_ASSERTED` |
+| `source-defect` | A `DART-OPS-001` failure localized to the SOURCE boundary |
+| `build-defect` | A `DART-OPS-001` failure localized to the BUILD boundary |
+| `live-drift` | A `DART-OPS-002` failure localized to the LIVE boundary without network access |
+| `asserted-provenance` | Asserted deployment provenance that remains unverified |
+| `external-defect` | A recorded AFDocs failure kept outside internal findings |
+| `regression` | A compatible `CHANGED` transition from `PASS` to `FAIL` |
+| `incompatible-baseline` | An `INCOMPATIBLE` comparison with `RULE_VERSION_CHANGED` |
+
+### Localize a failure
+
+Analyze a defect scenario and read the Markdown report. Each finding names its rule,
+target, responsible boundary, observed and expected values, evidence locations, and
+recommended action.
+
+```bash
+node dist/cli.js bundle create \
+  --config examples/scenarios/source-defect/collector.json \
+  --output .artifacts/source-defect-bundle
+
+node dist/cli.js analyze \
+  --bundle .artifacts/source-defect-bundle \
+  --json .artifacts/source-defect.json \
+  --markdown .artifacts/source-defect.md
+```
+
+Replace `source-defect` with `build-defect` or `live-drift` to move the responsible
+boundary. The LIVE scenario compares captured bytes only and performs no network
+request.
+
+### Compare against a baseline
+
+Analyze the baseline and current runs, then compare them. The comparison stays
+compatible because both runs declare the same requested modes and mappings.
+
+```bash
+node dist/cli.js bundle create \
+  --config examples/scenarios/regression/baseline/collector.json \
+  --output .artifacts/regression-baseline-bundle
+node dist/cli.js analyze \
+  --bundle .artifacts/regression-baseline-bundle \
+  --json .artifacts/regression-baseline.json
+
+node dist/cli.js bundle create \
+  --config examples/scenarios/regression/current/collector.json \
+  --output .artifacts/regression-current-bundle
+node dist/cli.js analyze \
+  --bundle .artifacts/regression-current-bundle \
+  --json .artifacts/regression-current.json
+
+node dist/cli.js compare \
+  --baseline .artifacts/regression-baseline.json \
+  --current .artifacts/regression-current.json \
+  --json .artifacts/regression-comparison.json
+```
+
+The result contains a `CHANGED` transition that retains `previous_status` and
+`current_status`. Missing build evidence appears as `CHANGED` to `UNAVAILABLE` rather
+than as a resolved finding.
+
+### Reject an incompatible baseline
+
+Compare the same scenario against a committed baseline whose rule set digest differs.
+The command exits 5 and classifies the comparison as `INCOMPATIBLE` with
+`RULE_VERSION_CHANGED`, never as new or resolved.
+
+```bash
+node dist/cli.js bundle create \
+  --config examples/scenarios/incompatible-baseline/collector.json \
+  --output .artifacts/incompatible-bundle
+node dist/cli.js analyze \
+  --bundle .artifacts/incompatible-bundle \
+  --json .artifacts/incompatible-current.json
+
+node dist/cli.js compare \
+  --baseline examples/scenarios/incompatible-baseline/incompatible-baseline.json \
+  --current .artifacts/incompatible-current.json \
+  --json .artifacts/incompatible-comparison.json
+```
+
+### Apply an advisory policy
+
+The live drift scenario ships a trusted base root whose policy treats a
+`DART-OPS-002` failure as advisory. The finding still fails, and CI still exits 0.
+
+```bash
+node dist/cli.js bundle create \
+  --config examples/scenarios/live-drift/collector.json \
+  --output .artifacts/live-drift-bundle
+
+node dist/cli.js ci \
+  --bundle .artifacts/live-drift-bundle \
+  --trusted-base-root examples/scenarios/live-drift/trusted-base \
+  --json .artifacts/live-drift-ci.json \
+  --markdown .artifacts/live-drift-ci.md
+```
+
+### Apply a blocking policy
+
+The regression scenario ships a trusted base root that contains both a reviewed baseline
+and a policy that blocks on `CHANGED` regressions and `DART-OPS-001` failures. The same
+evidence now exits 1.
+
+```bash
+node dist/cli.js ci \
+  --bundle .artifacts/regression-current-bundle \
+  --trusted-base-root examples/scenarios/regression/trusted-base \
+  --json .artifacts/regression-ci.json \
+  --markdown .artifacts/regression-ci.md
+```
+
+The two policy runs differ only in configuration, which is what separates a finding
+status from a CI decision. The canonical JSON, not the exit code, remains the audit
+record.
 
 ## Evidence model
 
@@ -179,6 +306,13 @@ The report contains no current clock, machine path, hostname, or environment val
 Findings keep deterministic fact, likely cause, recommended fix, validation method, and
 regression test suggestion separate. Likely-cause confidence is qualitative and tied to
 evidence references.
+
+A passing finding reports `responsible_boundary` as `null` and carries no likely cause.
+That absence is deliberate: no boundary is responsible when nothing failed, and the
+prototype does not infer a cause for an outcome it did not observe as a defect. A
+passing status also remains independent of trust. `DART-OPS-003` can pass while
+authenticity is `UNVERIFIED` and freshness is `UNKNOWN`, so the Markdown report prints
+those observed values next to the status rather than leaving them to the canonical JSON.
 
 ## Baseline and regression
 
@@ -300,12 +434,15 @@ process-isolation guarantee.
 
 [Live Acquisition Security Gate](./live-acquisition-security-gate.md) lists the blocking
 requirements for Stage 3. [Practitioner Validation Protocol](./practitioner-validation-protocol.md)
-defines human evaluation, which remains `NOT_RUN`.
+defines human evaluation. Its first pilot is recorded in
+[Practitioner Validation Results](./practitioner-validation-results.md), which covered
+only the defect-free example and left four of six success criteria unevaluated.
 
 The prototype does not establish universal agent success, complete readiness auditing,
 live-site coverage, framework coverage, content correctness, or production readiness.
 
 ## Next validation step
 
-Run the practitioner protocol with the three intended roles before adding live
-acquisition or more rules.
+Correct the reporting and terminology problems the first pilot recorded, then re-run the
+practitioner protocol against the full fixture set before adding live acquisition or more
+rules.

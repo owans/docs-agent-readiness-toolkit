@@ -95,13 +95,13 @@ Evidence completeness is recorded independently for each mode and external evide
 
 ## Quick start
 
-Install Node.js 22.12.0 or later and npm, then build the toolkit and create a bundle
-from the included minimal example:
+Install Node.js 22.12.0 or later and npm, then create and analyze a bundle from the
+included minimal example. `npm run check` ends in a build, so no separate build step is
+needed:
 
 ```bash
 npm ci
 npm run check
-npm run build
 
 node dist/cli.js bundle create \
   --config examples/minimal/collector.json \
@@ -112,6 +112,14 @@ node dist/cli.js analyze \
   --json .artifacts/report.json \
   --markdown .artifacts/report.md
 ```
+
+Each command prints the bundle or report it wrote. Output paths are never overwritten,
+so use a new path or remove the previous file before repeating a step.
+
+The minimal example contains no defect, so every finding passes. Work through the
+[scenario walkthrough](docs/phase3/README.md#scenario-walkthrough) to see a localized
+failure, a baseline comparison, an incompatible baseline, and both advisory and blocking
+CI outcomes.
 
 The collector reads only the files declared in the configuration. The analyzer replays
 the resulting bundle without HTTP, DNS, browser, or arbitrary command execution.
@@ -173,6 +181,7 @@ contribution process, and planned direction:
 - [Rule catalog](docs/agent-readiness/agent-readiness-rule-catalog.md)
 - [Decision log](docs/agent-readiness/agent-readiness-phase2-decision-log.md)
 - [Practitioner validation protocol](docs/phase3/practitioner-validation-protocol.md)
+- [Practitioner validation results](docs/phase3/practitioner-validation-results.md)
 - [Roadmap](ROADMAP.md)
 - [Changelog](CHANGELOG.md)
 

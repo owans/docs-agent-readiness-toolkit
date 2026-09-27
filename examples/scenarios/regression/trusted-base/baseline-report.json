@@ -1,0 +1,134 @@
+{
+  "bundle_id": "sha256:d05830efc03e7ce3d47363ee46385b005194c505c9a6cb39a5a3246873e0ea79",
+  "compatibility": {
+    "canonicalizer_version": "json-canonicalize@3.0.1",
+    "configuration_digest": "sha256:d21be87a9e0d9dbb26f5e4b4519ba28d81a8f5124545fcf032c0758ad276e8a8",
+    "external_adapter_versions": {},
+    "external_evaluator_versions": {},
+    "identity_algorithm_version": "1.0.0",
+    "parser_version": "evidence-bundle-parser@1.0.0",
+    "report_schema_version": "1.0",
+    "rule_set_digest": "sha256:0350791c2e89ae65009fca9c642cf41981752c5f188990c30a3d6d46b580385e",
+    "target_inventory_digest": "sha256:cd9494c7ca5dbec8b16a3658725f01d73c5c353bc3fc015d9b4a9320f0122d09",
+    "toolkit_version": "0.0.0"
+  },
+  "evidence_completeness": {
+    "BUILD": "COMPLETE",
+    "EXTERNAL": "NOT_REQUESTED",
+    "LIVE": "NOT_REQUESTED",
+    "RUNTIME_OBSERVATION": "NOT_REQUESTED",
+    "SOURCE": "COMPLETE",
+    "TASK_EVALUATION": "NOT_REQUESTED"
+  },
+  "external_evaluations": [],
+  "findings": [
+    {
+      "category": "operational-readiness",
+      "deterministic_fact": "Declared source-to-build relation mapping:page references present SOURCE and BUILD evidence.",
+      "evidence": [
+        {
+          "evidence_id": "source:page",
+          "sha256": "dcdfcc3bb434d2bd8ba9bd2951a5e71ff16787f8d57438205bd9b798422f12e8"
+        },
+        {
+          "evidence_id": "build:page",
+          "sha256": "2f5d0067cd2dbb0535756226896e556a9937c0a3961d65316f263080d1ad862f"
+        }
+      ],
+      "evidence_mode": "BUILD",
+      "expected_value": { "build_present": true, "source_present": true },
+      "fingerprint": "sha256:e0aab5ae9e28cdfd77833d3f98dce8e9484cea5a6b5ea7017470d1d45f23698e",
+      "identity_status": "IDENTITY_ASSERTED",
+      "implementation_digest": "sha256:c4cd427070947283dc931be268e60fceb81f01219045ec31ad62c61ee951a4d8",
+      "likely_causes": [],
+      "observed_value": {
+        "build_present": true,
+        "mapping_trust": "USER_ASSERTED",
+        "source_present": true
+      },
+      "recommended_fix": "No remediation required.",
+      "regression_test_suggestion": "Keep this mapping as a source-to-build fixture.",
+      "responsible_boundary": null,
+      "rule_id": "DART-OPS-001",
+      "rule_version": "1.0.0",
+      "severity": "high",
+      "status": "PASS",
+      "sub_identity": "mapping:page",
+      "target": { "identity": "build:page", "kind": "ARTIFACT" },
+      "title": "Explicit source-to-build identity",
+      "validation_method": "Recreate the bundle and replay DART-OPS-001."
+    },
+    {
+      "category": "operational-readiness",
+      "deterministic_fact": "Evidence integrity, acquisition, provenance, authenticity, and freshness remain distinct.",
+      "evidence": [
+        {
+          "evidence_id": "build:page",
+          "sha256": "2f5d0067cd2dbb0535756226896e556a9937c0a3961d65316f263080d1ad862f"
+        }
+      ],
+      "evidence_mode": "BUILD",
+      "expected_value": { "integrity": "MATCHED", "provenance_recorded": true },
+      "fingerprint": "sha256:c16be0a31d56a663ce66e29fc98236e71fa91c495ba703c901af200e870d8cb8",
+      "identity_status": "IDENTITY_UNVERIFIED",
+      "implementation_digest": "sha256:f06bdb2546c95d185d366f9804aa3b62ca917782f590a5f4d776f1242153a8be",
+      "likely_causes": [],
+      "observed_value": {
+        "acquisition": "COLLECTED",
+        "authenticity": "UNVERIFIED",
+        "deployment_trust": null,
+        "freshness": "UNKNOWN",
+        "integrity": "MATCHED",
+        "provenance": "PRESENT"
+      },
+      "recommended_fix": "No remediation required.",
+      "regression_test_suggestion": "Keep asserted and attested provenance fixtures separate.",
+      "responsible_boundary": null,
+      "rule_id": "DART-OPS-003",
+      "rule_version": "1.0.0",
+      "severity": "medium",
+      "status": "PASS",
+      "sub_identity": "build:page",
+      "target": { "identity": "build:page", "kind": "ARTIFACT" },
+      "title": "Evidence provenance and trust",
+      "validation_method": "Verify the bundle and inspect trust labels."
+    },
+    {
+      "category": "operational-readiness",
+      "deterministic_fact": "Evidence integrity, acquisition, provenance, authenticity, and freshness remain distinct.",
+      "evidence": [
+        {
+          "evidence_id": "source:page",
+          "sha256": "dcdfcc3bb434d2bd8ba9bd2951a5e71ff16787f8d57438205bd9b798422f12e8"
+        }
+      ],
+      "evidence_mode": "SOURCE",
+      "expected_value": { "integrity": "MATCHED", "provenance_recorded": true },
+      "fingerprint": "sha256:c19e673699d0ba1a1a913302b8121ad20d9c9923e1440a37f217ee5d9580ae3a",
+      "identity_status": "IDENTITY_UNVERIFIED",
+      "implementation_digest": "sha256:f06bdb2546c95d185d366f9804aa3b62ca917782f590a5f4d776f1242153a8be",
+      "likely_causes": [],
+      "observed_value": {
+        "acquisition": "COLLECTED",
+        "authenticity": "UNVERIFIED",
+        "deployment_trust": null,
+        "freshness": "UNKNOWN",
+        "integrity": "MATCHED",
+        "provenance": "PRESENT"
+      },
+      "recommended_fix": "No remediation required.",
+      "regression_test_suggestion": "Keep asserted and attested provenance fixtures separate.",
+      "responsible_boundary": null,
+      "rule_id": "DART-OPS-003",
+      "rule_version": "1.0.0",
+      "severity": "medium",
+      "status": "PASS",
+      "sub_identity": "source:page",
+      "target": { "identity": "page", "kind": "DOCUMENT" },
+      "title": "Evidence provenance and trust",
+      "validation_method": "Verify the bundle and inspect trust labels."
+    }
+  ],
+  "report_id": "sha256:bd0dd754e97f1f34c9c69ff6f8ea9de1ae68648e04cd513ae6a3025b2c7b0642",
+  "schema_version": "1.0"
+}

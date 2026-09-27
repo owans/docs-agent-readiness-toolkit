@@ -6,8 +6,9 @@ procedure.
 ## Current state
 
 The package is private, versioned `0.0.0`, and has no public release, tag, or npm
-distribution. Practitioner validation remains `NOT_RUN`. A stable release is not
-appropriate at the current maturity level.
+distribution. Practitioner validation has completed a first pilot only, and four of its
+six success criteria remain unevaluated. A stable release is not appropriate at the
+current maturity level.
 
 Release automation is deliberately deferred until the project has a demonstrated
 release cadence and a reviewed distribution model.
@@ -35,7 +36,8 @@ and trusted publishing process are independently approved.
 
 Release notes for the current prototype must state that:
 
-- practitioner validation has not run;
+- practitioner validation has completed a first pilot only, with four of six success
+  criteria unevaluated;
 - live acquisition remains blocked;
 - framework adapters and broad readiness rules are deferred;
 - AI and task evaluation are deferred;

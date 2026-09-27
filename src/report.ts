@@ -1,5 +1,5 @@
 import { writeFile } from "node:fs/promises";
-import { canonicalJson, derivedId } from "./canonical.js";
+import { canonicalJson, compareCodePoint, derivedId } from "./canonical.js";
 import type {
   AnalysisReport,
   ComparisonReport,
@@ -7,9 +7,16 @@ import type {
   PolicyResult,
   RegressionState,
 } from "./contracts.js";
+import type { Finding, TrustedValue } from "./contracts.js";
 import { validateSchema } from "./schema.js";
 import { readBoundedFile, readSafeFile } from "./security/paths.js";
 import { markdownText } from "./security/sanitize.js";
+
+/**
+ * Recorded evidence locators keyed by evidence ID. The renderer never reads the
+ * filesystem; callers supply locators from a loaded bundle manifest.
+ */
+export type EvidenceLocators = Record<string, TrustedValue>;
 
 export async function writeCanonicalJson(path: string, value: unknown): Promise<void> {
   await writeFile(path, canonicalJson(value), { encoding: "utf8", flag: "wx" });
@@ -43,10 +50,81 @@ function countBy<T extends string>(values: T[], keys: readonly T[]): Record<T, n
   ) as Record<T, number>;
 }
 
+function scalarText(value: unknown): string {
+  if (value === null || value === undefined) {
+    return "none";
+  }
+  if (typeof value === "string") {
+    return markdownText(value);
+  }
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  return markdownText(JSON.stringify(value));
+}
+
+function valueLines(label: string, value: unknown): string[] {
+  if (value === null || value === undefined) {
+    return [`- ${label}: none`];
+  }
+  if (typeof value !== "object" || Array.isArray(value)) {
+    return [`- ${label}: ${scalarText(value)}`];
+  }
+  return Object.entries(value as Record<string, unknown>)
+    .map(([key, entry]): [string, unknown] => [key, entry])
+    .sort(([left], [right]) => compareCodePoint(left, right))
+    .map(([key, entry]) => `- ${label} ${markdownText(key)}: ${scalarText(entry)}`);
+}
+
+function findingLines(finding: Finding, locators: EvidenceLocators): string[] {
+  const lines = [
+    "",
+    `### ${markdownText(finding.rule_id)}: ${markdownText(finding.title)}`,
+    "",
+    `- Status: ${finding.status}`,
+    `- Severity: ${finding.severity}`,
+    `- Target: \`${markdownText(finding.target.identity)}\` (${finding.target.kind})`,
+    `- Sub-identity: \`${markdownText(finding.sub_identity)}\``,
+    `- Evidence mode: ${finding.evidence_mode}`,
+    `- Evidence boundary: ${finding.responsible_boundary ?? "none"}`,
+    `- Identity: ${finding.identity_status}`,
+    `- Fact: ${markdownText(finding.deterministic_fact)}`,
+    ...valueLines("Observed", finding.observed_value),
+    ...valueLines("Expected", finding.expected_value),
+  ];
+
+  for (const item of finding.evidence) {
+    const locator = locators[item.evidence_id];
+    const location = locator
+      ? ` at \`${markdownText(locator.value)}\` (locator trust ${locator.trust})`
+      : "";
+    lines.push(
+      `- Evidence \`${markdownText(item.evidence_id)}\`${location}, sha256 ${item.sha256}`,
+    );
+  }
+  if (finding.evidence.length === 0) {
+    lines.push("- Evidence: none captured");
+  }
+
+  for (const cause of finding.likely_causes) {
+    lines.push(`- Likely cause (${cause.confidence}): ${markdownText(cause.text)}`);
+  }
+  if (finding.likely_causes.length === 0) {
+    lines.push("- Likely cause: none inferred");
+  }
+
+  lines.push(
+    `- Recommended action: ${markdownText(finding.recommended_fix)}`,
+    `- Validation: ${markdownText(finding.validation_method)}`,
+  );
+  return lines;
+}
+
 export function renderMarkdownReport(
   report: AnalysisReport,
   comparison?: ComparisonReport,
   policy?: PolicyResult,
+  locators: EvidenceLocators = {},
 ): string {
   const findingStatuses: FindingStatus[] = [
     "PASS",
@@ -88,28 +166,14 @@ export function renderMarkdownReport(
     "",
     "## Findings",
     "",
+    "Counts summarize status only. A status is not a policy decision, and a passing",
+    "status does not establish authenticity, freshness, or lineage.",
+    "",
     ...findingStatuses.map((status) => `- ${status}: ${findingCounts[status]}`),
   ];
 
-  for (const finding of report.findings.filter((item) => item.status !== "PASS")) {
-    lines.push(
-      "",
-      `### ${markdownText(finding.rule_id)}: ${markdownText(finding.title)}`,
-      "",
-      `- Status: ${finding.status}`,
-      `- Target: \`${markdownText(finding.target.identity)}\``,
-      `- Evidence boundary: ${finding.responsible_boundary ?? "none"}`,
-      `- Identity: ${finding.identity_status}`,
-      `- Fact: ${markdownText(finding.deterministic_fact)}`,
-      `- Recommended action: ${markdownText(finding.recommended_fix)}`,
-      `- Validation: ${markdownText(finding.validation_method)}`,
-      `- Evidence: ${finding.evidence
-        .map((item) => `${markdownText(item.evidence_id)} (${item.sha256})`)
-        .join(", ")}`,
-    );
-    for (const cause of finding.likely_causes) {
-      lines.push(`- Likely cause (${cause.confidence}): ${markdownText(cause.text)}`);
-    }
+  for (const finding of report.findings) {
+    lines.push(...findingLines(finding, locators));
   }
 
   if (report.external_evaluations.length > 0) {

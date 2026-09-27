@@ -12,6 +12,7 @@ import {
 } from "./evidence.js";
 import { evaluatePolicy, loadTrustedPolicy, PolicyConfigurationError } from "./policy.js";
 import {
+  type EvidenceLocators,
   loadAnalysisReport,
   loadAnalysisReportFromRoot,
   renderMarkdownReport,
@@ -73,11 +74,13 @@ async function emit(
 ): Promise<void> {
   if (jsonPath) {
     await writeCanonicalJson(jsonPath, value);
+    output.stdout(`Wrote canonical JSON report: ${sanitizeText(jsonPath)}\n`);
   } else {
     output.stdout(canonicalJson(value));
   }
   if (markdown && markdownPath) {
     await writeFile(markdownPath, markdown, { encoding: "utf8", flag: "wx" });
+    output.stdout(`Wrote Markdown report: ${sanitizeText(markdownPath)}\n`);
   }
 }
 
@@ -86,11 +89,12 @@ async function runBundle(args: string[], output: Output): Promise<number> {
   const options = parseOptions(args.slice(1));
   if (action === "create") {
     rejectUnknown(options, ["--config", "--output"]);
-    const result = await collectEvidenceBundle(
-      required(options, "--config"),
-      required(options, "--output"),
-    );
+    const outputPath = required(options, "--output");
+    const result = await collectEvidenceBundle(required(options, "--config"), outputPath);
     output.stdout(`${result.bundleId}\n`);
+    output.stdout(
+      `Collected ${result.manifest.evidence.length} evidence records into ${sanitizeText(outputPath)}\n`,
+    );
     return 0;
   }
   if (action === "verify") {
@@ -107,17 +111,22 @@ async function analyzeFromPath(bundlePath: string) {
   const external = await importRecordedAfdocs(bundle);
   const report = analyzeBundle(bundle, external);
   await validateSchema("analysis-report", report);
-  return report;
+  const locators: EvidenceLocators = Object.fromEntries(
+    bundle.manifest.evidence.flatMap((evidence) =>
+      evidence.provenance.source ? [[evidence.id, evidence.provenance.source] as const] : [],
+    ),
+  );
+  return { report, locators };
 }
 
 async function runAnalyze(args: string[], output: Output): Promise<number> {
   const options = parseOptions(args);
   rejectUnknown(options, ["--bundle", "--json", "--markdown"]);
-  const report = await analyzeFromPath(required(options, "--bundle"));
+  const { report, locators } = await analyzeFromPath(required(options, "--bundle"));
   await emit(
     report,
     options.get("--json"),
-    renderMarkdownReport(report),
+    renderMarkdownReport(report, undefined, undefined, locators),
     options.get("--markdown"),
     output,
   );
@@ -150,7 +159,7 @@ async function runBaseline(args: string[], output: Output): Promise<number> {
 async function runCi(args: string[], output: Output): Promise<number> {
   const options = parseOptions(args);
   rejectUnknown(options, ["--bundle", "--trusted-base-root", "--json", "--markdown"]);
-  const report = await analyzeFromPath(required(options, "--bundle"));
+  const { report, locators } = await analyzeFromPath(required(options, "--bundle"));
   const trusted = await loadTrustedPolicy(required(options, "--trusted-base-root"));
   const comparison = trusted.baselineRelativePath
     ? compareReports(
@@ -165,7 +174,7 @@ async function runCi(args: string[], output: Output): Promise<number> {
   await emit(
     { report, ...(comparison ? { comparison } : {}), policy: result },
     options.get("--json"),
-    renderMarkdownReport(report, comparison, result),
+    renderMarkdownReport(report, comparison, result, locators),
     options.get("--markdown"),
     output,
   );
