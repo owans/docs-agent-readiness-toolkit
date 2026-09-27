@@ -45,6 +45,16 @@ Use the committed fixture set:
 Give participants the concise Markdown report first. Make canonical JSON and fixture
 files available on request. Do not explain the expected boundary in advance.
 
+Three Markdown reports cover the tasks below, and every task can be answered from them
+without opening canonical JSON:
+
+- `analyze --markdown` for findings, evidence, locations, and trust qualifiers;
+- `compare --markdown` for regression states and compatibility reasons;
+- `ci --markdown` for the policy effect and the resulting exit code.
+
+Generate all three before a session. A task that cannot be answered from these reports is
+a reporting defect to record, not a participant failure.
+
 ## Tasks
 
 Ask each participant to:
@@ -117,7 +127,7 @@ owner approval. They are not agreed acceptance criteria and remain
 | Incorrect authenticity or lineage claims | 0 across all participants |
 | Imported evaluator results read as internal findings | 0 across all participants |
 | Incompatible baseline read as new or resolved | 0 across all participants |
-| Correct evidence citation from the Markdown report alone | 3 of 3 participants |
+| Correct evidence citation from the three Markdown reports alone | 3 of 3 participants |
 | Time to first correct diagnosis | Recorded per fixture, no threshold until a second pilot |
 | Unresolved terminology problems at session end | 0 before further feature work |
 

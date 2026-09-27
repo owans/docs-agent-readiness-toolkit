@@ -205,12 +205,26 @@ export function renderMarkdownReport(
       "",
       "## Regression",
       "",
+      "A regression state describes change against a compatible baseline. It is neither a",
+      "finding status nor a policy decision.",
+      "",
+      `- Baseline report: \`${markdownText(comparison.baseline_report_id)}\``,
+      `- Current report: \`${markdownText(comparison.current_report_id)}\``,
+      `- Compatible: ${comparison.compatible}`,
+      "",
       ...regressionStates.map((state) => `- ${state}: ${regressionCounts[state]}`),
     );
-    for (const regression of comparison.regressions.filter((item) => item.state === "CHANGED")) {
-      lines.push(
-        `- CHANGED ${markdownText(regression.fingerprint)}: ${regression.previous_status} -> ${regression.current_status}`,
-      );
+    for (const regression of comparison.regressions) {
+      if (regression.state === "CHANGED") {
+        lines.push(
+          `- CHANGED ${markdownText(regression.fingerprint)}: ${regression.previous_status} -> ${regression.current_status}`,
+        );
+      }
+      if (regression.state === "INCOMPATIBLE") {
+        lines.push(
+          `- INCOMPATIBLE ${markdownText(regression.fingerprint)}: ${regression.reason ?? "unspecified"}`,
+        );
+      }
     }
   }
 

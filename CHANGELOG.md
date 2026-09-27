@@ -27,6 +27,8 @@ capabilities.
   acceptance thresholds recorded as `STAKEHOLDER_REQUIRED`.
 - A scenario walkthrough covering failure localization, baseline comparison, an
   incompatible baseline, and both CI policy outcomes.
+- A `--markdown` option on `compare`, so regression states and compatibility reasons can
+  be read without opening canonical JSON.
 
 ### Changed
 
@@ -43,6 +45,8 @@ the detail the human-readable report carries.
 - The `DART-OPS-001` deterministic fact names the declared source-to-build relation
   rather than repeating the word mapping, which changes `report_id` for affected
   reports without changing any compatibility digest.
+- The Markdown regression section now reports the compared report identities, whether the
+  comparison was compatible, and the reason for every `INCOMPATIBLE` entry.
 
 ### Deprecated
 
@@ -65,6 +69,9 @@ pilot recorded.
   `npm run check` already ends in a build.
 - Documented that output paths are never overwritten and that a passing finding
   deliberately carries no responsible boundary and no likely cause.
+- Resolved the disagreement between the Markdown-first validation protocol and a
+  JSON-only `compare` command, which blocked a practitioner session. The protocol now
+  names the three Markdown reports that cover its tasks.
 
 ### Security
 

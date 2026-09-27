@@ -135,12 +135,18 @@ async function runAnalyze(args: string[], output: Output): Promise<number> {
 
 async function runCompare(args: string[], output: Output): Promise<number> {
   const options = parseOptions(args);
-  rejectUnknown(options, ["--baseline", "--current", "--json"]);
+  rejectUnknown(options, ["--baseline", "--current", "--json", "--markdown"]);
   const baseline = await loadAnalysisReport(required(options, "--baseline"));
   const current = await loadAnalysisReport(required(options, "--current"));
   const comparison = compareReports(baseline, current);
   await validateSchema("comparison-report", comparison);
-  await emit(comparison, options.get("--json"), undefined, undefined, output);
+  await emit(
+    comparison,
+    options.get("--json"),
+    renderMarkdownReport(current, comparison),
+    options.get("--markdown"),
+    output,
+  );
   return comparison.compatible ? 0 : 5;
 }
 
