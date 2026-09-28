@@ -15,15 +15,17 @@ Run them with the scenario walkthrough in `docs/phase3/README.md`.
 | `asserted-provenance` | Asserted deployment provenance that remains unverified |
 | `external-defect` | A recorded AFDocs failure kept outside internal findings |
 | `regression` | A compatible `CHANGED` transition, a reviewed baseline, and advisory and blocking policies over the same bundle |
-| `incompatible-baseline` | An `INCOMPATIBLE` comparison with `RULE_VERSION_CHANGED` |
+| `incompatible-baseline` | An `INCOMPATIBLE` comparison with `RULE_VERSION_CHANGED`, plus a trusted base that produces `ci` exit 5 |
 
 A `.gitkeep` file marks an evidence root that is intentionally empty, which is how the
 source and build boundary defects are represented.
 
-The committed reports under `incompatible-baseline`, `regression/trusted-base`, and
+The committed reports under `incompatible-baseline`,
+`incompatible-baseline/trusted-base`, `regression/trusted-base`, and
 `regression/trusted-base-advisory` are generated from these inputs.
 `tests/example-scenarios.test.ts` fails if a scenario stops reproducing the behavior its
-fixture defines.
+fixture defines. The incompatible trusted base reuses the committed incompatible
+baseline and does not regenerate it.
 
 The two regression trusted bases hold an identical baseline and differ only in policy
 effects, so the same bundle can be evaluated under both.

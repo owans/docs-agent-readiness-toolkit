@@ -228,6 +228,9 @@ describe("committed practitioner scenarios", () => {
       expect(markdown).toContain(
         "CHANGED DART-OPS-001 mapping:page on declared target build:page: PASS -> FAIL",
       );
+      expect(markdown).toContain(
+        "UNCHANGED DART-OPS-003 source:page on declared target page: PASS -> PASS",
+      );
       expect(markdown).not.toMatch(/CHANGED sha256:/u);
     } finally {
       await rm(root, { recursive: true, force: true });
@@ -258,6 +261,9 @@ describe("committed practitioner scenarios", () => {
       expect(markdown).toContain("- Compatible: false");
       expect(markdown).toContain("- INCOMPATIBLE: 1");
       expect(markdown).toContain("RULE_VERSION_CHANGED");
+      expect(markdown).toContain(
+        "Next: do not treat this comparison as a regression. Review the named compatibility reason, then stop or create a new reviewed baseline after explicit owner approval.",
+      );
       expect(markdown).not.toContain("- NEW: 1");
       expect(markdown).not.toContain("- RESOLVED: 1");
     } finally {
@@ -363,6 +369,11 @@ describe("committed practitioner scenarios", () => {
         ),
       ),
     ).toBe(true);
+    const markdown = renderMarkdownReport(current, blockingComparison, blockingResult);
+    expect(markdown).toContain(
+      "BLOCKING: regression CHANGED DART-OPS-001 mapping:page on declared target build:page PASS -> FAIL",
+    );
+    expect(markdown).not.toContain("-\\>");
   });
 
   it("labels the bundle digest and pluralizes a single evidence record", async () => {
@@ -389,6 +400,29 @@ describe("committed practitioner scenarios", () => {
       expect(stdout).toMatch(/^Bundle ID: sha256:[a-f0-9]{64}\n/u);
       expect(stdout).toContain("Collected 1 evidence record into");
       expect(stdout).not.toContain("Collected 1 evidence records");
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("labels the baseline path and report identity", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "dart-baseline-msg-"));
+    try {
+      const reportPath = await analyzeScenarioToFile(root, "clean-mapping", "report");
+      const baselinePath = path.join(root, "baseline.json");
+      let stdout = "";
+      const code = await runCli(
+        ["baseline", "create", "--report", reportPath, "--output", baselinePath],
+        {
+          stdout: (value) => {
+            stdout += value;
+          },
+          stderr: () => undefined,
+        },
+      );
+      expect(code).toBe(0);
+      expect(stdout).toContain(`Wrote reviewed baseline: ${baselinePath}\n`);
+      expect(stdout).toMatch(/Baseline report ID: sha256:[a-f0-9]{64}\n/u);
     } finally {
       await rm(root, { recursive: true, force: true });
     }
@@ -439,5 +473,48 @@ describe("committed practitioner scenarios", () => {
     expect(comparison.regressions).toEqual([
       { state: "INCOMPATIBLE", fingerprint: "*", reason: "RULE_VERSION_CHANGED" },
     ]);
+  });
+
+  it("names exit 5 in Policy when ci uses the incompatible trusted base", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "dart-incompatible-ci-"));
+    try {
+      const bundlePath = path.join(root, "bundle");
+      await runCli(
+        [
+          "bundle",
+          "create",
+          "--config",
+          path.join(scenarioRoot, "incompatible-baseline", "collector.json"),
+          "--output",
+          bundlePath,
+        ],
+        cliSink,
+      );
+      const markdownPath = path.join(root, "ci.md");
+      const code = await runCli(
+        [
+          "ci",
+          "--bundle",
+          bundlePath,
+          "--trusted-base-root",
+          path.join(scenarioRoot, "incompatible-baseline", "trusted-base"),
+          "--json",
+          path.join(root, "ci.json"),
+          "--markdown",
+          markdownPath,
+        ],
+        cliSink,
+      );
+      expect(code).toBe(5);
+      const markdown = await readFile(markdownPath, "utf8");
+      expect(markdown).toContain("- Effect: INFORMATIONAL");
+      expect(markdown).toContain("- Blocking: 0");
+      expect(markdown).toContain("- Exit code: 5");
+      expect(markdown).toContain(
+        "EXIT 5: baseline comparison is incompatible and policy sets incompatible_baseline to ERROR",
+      );
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
   });
 });

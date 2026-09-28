@@ -119,7 +119,7 @@ documented commands accept directly.
 | `asserted-provenance` | Asserted deployment provenance that remains unverified |
 | `external-defect` | A recorded AFDocs failure kept outside internal findings |
 | `regression` | A compatible `CHANGED` transition, plus advisory and blocking policies over one bundle |
-| `incompatible-baseline` | An `INCOMPATIBLE` comparison with `RULE_VERSION_CHANGED` |
+| `incompatible-baseline` | An `INCOMPATIBLE` comparison with `RULE_VERSION_CHANGED`, plus `ci` exit 5 |
 
 ### Localize a failure
 
@@ -241,6 +241,23 @@ node dist/cli.js compare \
 The Markdown report names the reason as `RULE_VERSION_CHANGED`, so the incompatibility
 can be read without opening the canonical JSON.
 
+The same bundle against the shipped incompatible trusted base produces the Policy
+section for exit 5. Compare already exited 5. This `ci` step shows the configured
+cause instead of a blocking count.
+
+```bash
+node dist/cli.js ci \
+  --bundle .artifacts/incompatible-bundle \
+  --trusted-base-root examples/scenarios/incompatible-baseline/trusted-base \
+  --json .artifacts/incompatible-ci.json \
+  --markdown .artifacts/incompatible-ci.md
+```
+
+The command exits 5. Policy reports `Effect: INFORMATIONAL`, `Blocking: 0`, and
+`EXIT 5: baseline comparison is incompatible and policy sets incompatible_baseline to
+ERROR`. Pairing this bundle with the regression trusted base does not demonstrate that
+outcome, because that evidence matches the reviewed regression baseline.
+
 ### Separate the finding from the CI decision
 
 The regression scenario ships two trusted base roots that hold the same reviewed
@@ -299,9 +316,9 @@ node dist/cli.js baseline create \
   --output .artifacts/my-baseline.json
 ```
 
-The command revalidates the report, writes it as canonical JSON, and prints its
-`report_id`. Review a baseline before trusting it, and keep policy and baseline changes
-under separate approval from the changes they judge.
+The command revalidates the report, writes it as canonical JSON, and prints the output
+path plus `Baseline report ID`. Review a baseline before trusting it, and keep policy
+and baseline changes under separate approval from the changes they judge.
 
 ## Evidence model
 
@@ -510,15 +527,18 @@ process-isolation guarantee.
 
 [Live Acquisition Security Gate](./live-acquisition-security-gate.md) lists the blocking
 requirements for Stage 3. [Practitioner Validation Protocol](./practitioner-validation-protocol.md)
-defines human evaluation. Its first pilot is recorded in
-[Practitioner Validation Results](./practitioner-validation-results.md), which covered
-only the defect-free example and left four of six success criteria unevaluated.
+defines human evaluation. The recorded sessions are in
+[Practitioner Validation Results](./practitioner-validation-results.md). Current result:
+`PROTOCOL_COMPLETE`, with the recorded blinding caveat. That result does not claim
+production readiness or prove the product hypothesis.
 
 The prototype does not establish universal agent success, complete readiness auditing,
 live-site coverage, framework coverage, content correctness, or production readiness.
 
-## Next validation step
+## Later work
 
-Correct the reporting and terminology problems the first pilot recorded, then re-run the
-practitioner protocol against the full fixture set before adding live acquisition or more
-rules.
+The protocol is complete for the evidence and replay prototype. Remaining later work is
+`NEW`, `RESOLVED`, and `EXTERNAL_CHECK_UNAVAILABLE` scenarios, neutral scenario
+identifiers, AFDocs check-specific remediation, and the controlled comparison study.
+Do not begin live acquisition until its security gate is executable and approved. Do
+not treat this close as authorization for adapters, AI, or more rules.

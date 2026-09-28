@@ -5,11 +5,11 @@ localization, and replay claims.
 
 ## Status
 
-This protocol defines practitioner validation for the evidence/replay prototype. A first
-pilot and a later full-fixture session set are recorded in
+This protocol defines practitioner validation for the evidence/replay prototype. The
+recorded sessions are in
 [`practitioner-validation-results.md`](practitioner-validation-results.md). The
-threshold table was approved on 2026-09-27. A re-run is still required before the
-protocol can be treated as complete.
+threshold table was approved on 2026-09-27. The reporting-fix re-run with all three
+required roles is complete. Current result: `PROTOCOL_COMPLETE`.
 
 The product hypothesis is:
 
@@ -114,9 +114,9 @@ Prototype validation can support further investment only if:
 - the report supplies enough evidence to reproduce the diagnosis offline;
 - terminology problems are documented and corrected before adding features.
 
-The repository owner approved the following numeric thresholds on 2026-09-27. They are
-the acceptance bar for a later re-run. They are not a claim that the recorded sessions
-met them. Time to first correct diagnosis remains recorded without a numeric bar.
+The repository owner approved the following numeric thresholds on 2026-09-27. They were
+the acceptance bar for the reporting-fix re-run. That set met them with the recorded
+blinding caveat. Time to first correct diagnosis remains recorded without a numeric bar.
 
 ### Approved thresholds
 
@@ -153,8 +153,9 @@ Store no credentials, private source, or full environment information.
 Publish an anonymized synthesis only after consent and review. Separate observed session
 results from facilitator inference and product recommendations.
 
-Current result: `PILOT_COMPLETE`. The recorded sessions are in
-[`practitioner-validation-results.md`](practitioner-validation-results.md). A later
-session set exercised the full fixture set with all three required roles. This
-document and that record are not evidence that the prototype passed practitioner
-validation.
+Current result: `PROTOCOL_COMPLETE`. The recorded sessions are in
+[`practitioner-validation-results.md`](practitioner-validation-results.md). The
+reporting-fix re-run executed the protocol as written with the three required roles.
+The approved thresholds are met with the recorded blinding caveat. This document does
+not claim production readiness, prove the product hypothesis, or replace a controlled
+comparison study.

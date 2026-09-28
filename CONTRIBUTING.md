@@ -1,7 +1,8 @@
 # Contributing
 
 Thank you for helping improve the Docs Agent Readiness Toolkit. The current repository
-is a pre-validation prototype, so changes should strengthen the evidence and replay
+is an evidence and replay prototype. Practitioner validation for that slice is
+complete with recorded caveats. Changes should strengthen the evidence and replay
 model without expanding the product boundary prematurely.
 
 ## Development setup
@@ -58,10 +59,10 @@ invalidate comparisons.
 ## Documentation
 
 Use direct, evidence-backed language. Do not claim production readiness, complete
-security, universal agent success, live coverage, or human validation without the
-required evidence. Practitioner validation has completed a first pilot and a later
-fixture-set rerun with all three required roles. The threshold table is approved. It is
-not complete, and the recorded results are not an acceptance decision.
+security, universal agent success, live coverage, or that the product hypothesis is
+proven. Practitioner validation for the evidence and replay prototype is
+`PROTOCOL_COMPLETE`. The approved thresholds are met with the recorded blinding
+caveat. The recorded results are not a production-readiness claim.
 
 Local documentation links must resolve. Official external links that reject automated
 clients may be documented rather than replaced when they are valid in a browser.

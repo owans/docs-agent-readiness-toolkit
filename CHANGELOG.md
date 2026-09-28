@@ -35,8 +35,12 @@ capabilities.
   so one bundle can demonstrate both CI outcomes.
 - Anonymized practitioner validation results for the second-iteration technical
   writer, documentation engineer, and senior platform engineer sessions.
+- Anonymized practitioner validation results for the reporting-fix re-run with all
+  three required roles.
 - Walkthrough commands for `clean-mapping`, `asserted-provenance`, and
   `external-defect`.
+- A trusted base under `incompatible-baseline` and a walkthrough `ci` command that
+  produce exit 5 with the Policy-section reason.
 
 ### Changed
 
@@ -67,11 +71,16 @@ the detail the human-readable report carries.
   documents `baseline create`.
 - The practitioner protocol defines a correct evidence citation and scopes the
   terminology threshold to unresolved problems carried over from a prior session.
-- The repository owner approved the practitioner threshold table on 2026-09-27. That
-  approval is the bar for a later re-run and does not close the recorded sessions.
-- Markdown `CHANGED` and finding-level `INCOMPATIBLE` lines name the rule, sub-identity,
-  and declared target instead of a finding hash. Policy regression reasons use the
-  same labels.
+- The repository owner approved the practitioner threshold table on 2026-09-27. The
+  reporting-fix re-run used that table as the bar and is recorded as
+  `PROTOCOL_COMPLETE`, with the recorded blinding caveat.
+- Markdown `CHANGED`, `UNCHANGED`, and finding-level `INCOMPATIBLE` lines name the
+  rule, sub-identity, and declared target instead of a finding hash. Policy regression
+  reasons use the same labels.
+- `baseline create` prints the output path and a labeled report identity.
+- Policy Markdown keeps the toolkit ` -> ` status arrow readable after sanitization.
+- Incompatible compare Markdown states the owner next action: review the reason, then
+  stop or re-baseline after approval.
 - Passing findings no longer recommend `No remediation required`. The Findings section
   states that `PASS` is a check status, not approval.
 

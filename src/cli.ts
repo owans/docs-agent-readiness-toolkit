@@ -187,8 +187,10 @@ async function runBaseline(args: string[], output: Output): Promise<number> {
   const options = parseOptions(args.slice(1));
   rejectUnknown(options, ["--report", "--output"]);
   const report = await loadAnalysisReport(required(options, "--report"));
-  await writeCanonicalJson(required(options, "--output"), report);
-  output.stdout(`${report.report_id}\n`);
+  const outputPath = required(options, "--output");
+  await writeCanonicalJson(outputPath, report);
+  output.stdout(`Wrote reviewed baseline: ${sanitizeText(outputPath)}\n`);
+  output.stdout(`Baseline report ID: ${report.report_id}\n`);
   return 0;
 }
 

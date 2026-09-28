@@ -91,6 +91,11 @@ function valueLines(label: string, value: unknown): string[] {
     .map(([key, entry]) => `- ${label} ${markdownText(key)}: ${scalarText(entry)}`);
 }
 
+/** Policy reasons are toolkit-built. Restore the status arrow after sanitizing. */
+function markdownPolicyReason(reason: string): string {
+  return markdownText(reason).replaceAll(" -\\>", " ->");
+}
+
 function exitCodeExplanation(policy: PolicyResult): string {
   switch (policy.exit_code) {
     case 0:
@@ -248,9 +253,13 @@ export function renderMarkdownReport(
       ...regressionStates.map((state) => `- ${state}: ${regressionCounts[state]}`),
     );
     for (const regression of comparison.regressions) {
-      if (regression.state === "CHANGED") {
+      if (
+        (regression.state === "CHANGED" || regression.state === "UNCHANGED") &&
+        regression.previous_status &&
+        regression.current_status
+      ) {
         lines.push(
-          `- CHANGED ${markdownText(describeRegression(regression))}: ${regression.previous_status} -> ${regression.current_status}`,
+          `- ${regression.state} ${markdownText(describeRegression(regression))}: ${regression.previous_status} -> ${regression.current_status}`,
         );
       }
       if (regression.state === "INCOMPATIBLE") {
@@ -258,6 +267,12 @@ export function renderMarkdownReport(
           `- INCOMPATIBLE (${markdownText(describeRegression(regression))}): ${regression.reason ?? "unspecified"}`,
         );
       }
+    }
+    if (comparison.regressions.some((regression) => regression.state === "INCOMPATIBLE")) {
+      lines.push(
+        "",
+        "Next: do not treat this comparison as a regression. Review the named compatibility reason, then stop or create a new reviewed baseline after explicit owner approval.",
+      );
     }
   }
 
@@ -278,7 +293,7 @@ export function renderMarkdownReport(
     if (policy.reasons.length > 0) {
       lines.push("", "Reasons:", "");
       for (const reason of policy.reasons) {
-        lines.push(`- ${markdownText(reason)}`);
+        lines.push(`- ${markdownPolicyReason(reason)}`);
       }
     }
     lines.push(
