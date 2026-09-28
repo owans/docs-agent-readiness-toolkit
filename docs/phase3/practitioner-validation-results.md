@@ -12,10 +12,13 @@ in its own section and does not modify the pilot record.
 Three pilot sessions were run with the three roles the protocol requires. Those sessions
 covered only the minimal Quick Start example. A second set began after the pilot
 remediation and stopped at a blocker. A third set then ran the full fixture walkthrough
-with all three required roles.
+with all three required roles. A fourth set re-ran the corrected walkthrough with all
+three required roles after the reporting-layer and writer-facing fixes.
 
-Current result: `PILOT_COMPLETE`. The full protocol remains incomplete, and this
-document is not evidence that the prototype passed practitioner validation.
+Current result: `PROTOCOL_COMPLETE`. The three required roles completed the reporting-fix
+re-run. The approved thresholds are met with the recorded blinding caveat. This document
+does not claim production readiness, prove the product hypothesis, or replace a
+controlled comparison study.
 
 ## First session set: pilot
 
@@ -631,16 +634,332 @@ code and documentation fixes only:
 Neither restatement is a practitioner re-run. Both criteria remain open until the
 three required roles execute the corrected walkthrough.
 
-## Next validation round
+## Fourth session set: reporting-fix re-run
 
-The repository owner approved the threshold table on 2026-09-27. Approval is the bar
-for a later re-run, not a claim that this set met it. P5 reviewed the table before
-that approval and did not close any 3-of-3 measure.
+This set was run after the reporting-layer and writer-facing fixes recorded above. It
+does not modify the pilot, the blocked second set, or the second-iteration
+three-role record.
 
-All three required roles have now run the full fixture walkthrough. Remaining work is
-a re-run after the reporting-layer and writer-facing fixes, and the already-deferred
-items: `NEW`, `RESOLVED`, and `EXTERNAL_CHECK_UNAVAILABLE` scenarios, neutral scenario
-identifiers, and AFDocs check-specific remediation. Generate all three Markdown
-reports before each later session, and pass `--bundle` when a comparison must cite
-locations. The controlled comparison study described in the protocol remains future
-work.
+### Fourth-set sessions
+
+| Participant | Role | Date | Duration | Commit | Quick Start completed | Walkthrough completed |
+| --- | --- | --- | --- | --- | --- | --- |
+| P8 | Technical writer working in docs as code | 2026-09-27 | About 22 minutes | `86d954ba5868e68e9d8c612e1c07c342a51dd423` | Yes | Yes |
+| P9 | Documentation engineer, five or more years | 2026-09-27 to 2026-09-28 | About 2 minutes of command time after reading the walkthrough | `5240261a92c50dbd94c4e384fa2a985688c9b84d` | Yes | Yes |
+| P10 | DevEx and platform engineer owning developer tooling and CI policy | 2026-09-28 | About 20 minutes | `5240261a92c50dbd94c4e384fa2a985688c9b84d` | Yes | Yes |
+
+No participant recording, employer repository content, or private environment
+information was collected. Facilitator interventions during diagnosis: none. P10 also
+ran an undocumented `ci` pairing to inspect the Policy-section exit-5 wording.
+
+### Fourth-set prototype revision
+
+P8 ran commit `86d954ba5868e68e9d8c612e1c07c342a51dd423`. P9 and P10 ran commit
+`5240261a92c50dbd94c4e384fa2a985688c9b84d`. Both commits are the reporting-layer
+revision. The compatibility block below was read from generated canonical JSON after
+the Markdown answers were written. Those fields are not present in the Markdown
+reports.
+
+- report schema version `1.0`
+- toolkit version `0.0.0`
+- identity algorithm version `1.0.0`
+- parser `evidence-bundle-parser@1.0.0`
+- canonicalizer `json-canonicalize@3.0.1`
+- rule set digest `sha256:0350791c2e89ae65009fca9c642cf41981752c5f188990c30a3d6d46b580385e`
+
+### Fourth-set fixture order
+
+The participants read the public README, ran the documented Quick Start to new output
+paths, then followed the walkthrough in this order.
+
+1. Quick Start / `examples/minimal`
+2. `source-defect`, `build-defect`, `live-drift`
+3. `clean-mapping`, `asserted-provenance`, `external-defect`
+4. Regression baseline, current, `compare --bundle --markdown`
+5. Incompatible baseline `compare --bundle --markdown` (exit 5)
+6. The same `regression-current` bundle under `trusted-base-advisory` (exit 0) and
+   `trusted-base` (exit 1)
+7. Optional live-drift advisory CI (exit 0)
+8. Optional `baseline create`
+
+The walkthrough table still names the expected boundary. That remains a protocol
+caveat: localization was not fully blinded.
+
+Diagnosis used the three Markdown reports first. Canonical JSON was opened only for
+session-record revision fields.
+
+### Fourth-set understand answers
+
+After the README, and before the walkthrough, the three participants stated the same
+narrow model: the toolkit freezes named source, build, and recorded-live files into a
+content-addressed bundle, analyzes them offline, compares compatible reports, and
+applies a separately owned CI policy. It is for writers, documentation engineers, and
+platform or DevEx engineers. The problem is false confidence when a page looks fine
+while source, build, captured live, or an imported evaluator result are not the same
+thing. The evidence is collected local files, imported or asserted recorded live
+bytes, and recorded AFDocs 0.18.7 results kept outside internal findings.
+
+P10 added that the setup surface is still a hand-written `collector.json`, and that
+`RUNTIME_OBSERVATION` and `TASK_EVALUATION` exist in the model but never appear in the
+shipped examples.
+
+### Fourth-set fixture coverage
+
+| Material | Exercised |
+| --- | --- |
+| Clean explicit source-to-build mapping | Yes |
+| Source-boundary defect | Yes |
+| Build-boundary defect | Yes |
+| Captured-live drift | Yes |
+| Imported AFDocs failure | Yes |
+| Compatible `CHANGED` regression | Yes |
+| Incompatible baseline | Yes |
+| Advisory and blocking CI on the same bundle | Yes |
+| `baseline create` | Yes |
+| `ci` against an incompatible baseline | P10 extra probe only. Not in the walkthrough. |
+
+### Fourth-set task outcomes
+
+The protocol defines ten tasks. Outcomes below record only what the three participants
+produced from Markdown.
+
+| Task | Outcome |
+| --- | --- |
+| 1. Identify what failed and the affected target | Completed by all three. Source and build: `DART-OPS-001` FAIL on declared target `build:page`. Live: `DART-OPS-002` FAIL. External: `llms-txt-exists` FAIL under External evaluations. Findings `FAIL: 0` was not read as the imported check passing. |
+| 2. Identify the responsible evidence boundary | Completed by all three for SOURCE, BUILD, LIVE, and EXTERNAL. The walkthrough table and directory names disclosed the expected boundary. |
+| 3. Point to the evidence establishing the deterministic fact | Completed by all three from analyze and from `compare --bundle`. Citations included evidence ID, locator, locator trust, and digest. The imported AFDocs locator remained `at afdocs` with trust `USER_ASSERTED`. |
+| 4. Separate deterministic fact from likely cause | Completed by all three. Facts named missing mapped evidence or differing SHA-256 values. Likely causes stayed labeled inferred. |
+| 5. State the lineage identity result | Completed by all three for `IDENTITY_ASSERTED` and `IDENTITY_UNVERIFIED`. Nothing in the eight scenarios reached `IDENTITY_ESTABLISHED` or `IDENTITY_INCOMPATIBLE` on a mapping. |
+| 6. Explain the baseline transition and policy effect | Completed for `CHANGED` (`PASS` to `FAIL`, `PASS` to `UNAVAILABLE`), `UNCHANGED`, and `INCOMPATIBLE` / `RULE_VERSION_CHANGED`. Advisory CI exited 0; blocking CI exited 1. No `NEW`, `RESOLVED`, or `EXTERNAL_CHECK_UNAVAILABLE` fixture was supplied. P8 and P9 did not run `ci` against an incompatible baseline. P10 confirmed the Policy-section exit-5 wording on an extra probe. |
+| 7. Choose the next safe remediation and validation action | Completed for internal findings. Weak for the imported AFDocs row, which has no check-specific recommended action. |
+| 8. Explain whether the report proves deployed state or task success | Completed correctly by all three. Each stated that it proves neither. |
+| 9. Replay the bundle offline and compare report identity | Completed. Re-analyzing the source-defect bundle reproduced report ID `sha256:32d307788b7e335f4073e8526d42b430d45223c428618340d0ddf320337e9fba`. The same `regression-current` bundle kept `sha256:0fba755ccd7ee15866ecab0dc33f7b5c6e3cb44d520ff279acf80af2ab03f10d` under both policies. |
+| 10. Distinguish imported evaluator output and target identity from authenticity | Completed by all three. AFDocs stayed under External evaluations. Integrity `MATCHED` was not read as authenticity. |
+
+P8 recorded times to first correct diagnosis of about 60 seconds for source, 40 seconds
+for build, and 45 seconds for live. P9 and P10 recorded overall session time and did
+not supply per-fixture diagnosis times. There is no numeric time bar.
+
+### Fourth-set handoff confirmation
+
+| Confirmation | P8 | P9 | P10 |
+| --- | --- | --- | --- |
+| Localize SOURCE, BUILD, LIVE, and imported AFDocs from Markdown | Pass | Pass, with the naming caveat | Pass, with the naming caveat |
+| A hash is not proof of authenticity or lineage | Pass | Pass | Pass |
+| External AFDocs rows stay outside Findings counts; `FAIL: 0` is not the imported check | Pass | Pass | Pass |
+| Incompatible compare is `INCOMPATIBLE` / `RULE_VERSION_CHANGED`, not new or resolved | Pass | Pass | Pass |
+| `ci` against an incompatible baseline names exit 5 | Not run. The walkthrough does not document that command. | Not run. The walkthrough does not document that command. | Pass on an extra probe. The documented incompatible step is compare-only. |
+| `compare --bundle --markdown` shows file locations and locator trust | Pass | Pass | Pass |
+| `CHANGED` lines name the finding in words | Pass | Pass | Pass |
+| Blocking CI names the results, not only `Blocking: 3` | Pass | Pass | Pass |
+| `PASS` next to `authenticity: UNVERIFIED` or `ASSERTED` does not read as "this is fine" | Pass | Pass | Pass |
+| Replay of the same bundle produces the same report identity | Pass | Pass | Pass |
+
+### Fourth-set threshold outcome
+
+The repository owner approved the threshold table on 2026-09-27. These rows are the
+reporting-fix re-run against that bar.
+
+| Measure | Approved threshold | This set |
+| --- | --- | --- |
+| Correct responsible-boundary localization | 3 of 3 participants per defect fixture | Met. All three localized SOURCE, BUILD, LIVE, and EXTERNAL. The measure is not blinded: directory names and the walkthrough table disclose the expected boundary. |
+| Incorrect authenticity or lineage claims | 0 across all participants | Met. 0. |
+| Imported evaluator results read as internal findings | 0 across all participants | Met. 0. Findings `FAIL: 0` was not treated as a passing imported check. |
+| Incompatible baseline read as new or resolved | 0 across all participants | Met. 0 on `compare`. P10 also did not read the extra-probe `ci` exit 5 as new or resolved. |
+| Correct evidence citation from the three Markdown reports alone | 3 of 3 participants | Met when `--bundle` is passed to `compare`. |
+| Time to first correct diagnosis | Recorded per fixture, no numeric threshold | Recorded for P8. P9 and P10 recorded session duration only. |
+| Unresolved terminology problems carried over from a prior session | 0 before further feature work | Met. The second-iteration blockers did not recur. New residuals are recorded below and are not carried-over blockers. |
+
+### Fourth-set diagnosis
+
+Source defect: `DART-OPS-001` FAIL, boundary SOURCE. Build exists at
+`BUILD:page/index.html`; mapped `source:page` is absent. Completeness: SOURCE
+`UNAVAILABLE`, LIVE `NOT_REQUESTED`. Next: add the source file or fix the mapping,
+then replay.
+
+Build defect: same rule, boundary BUILD. Source exists at `SOURCE:docs/page.md`;
+mapped build is absent. Next: inspect why the build omitted the page.
+
+Live drift: `DART-OPS-002` FAIL, boundary LIVE. Different `build_sha256` and
+`live_sha256`. Offline. Next: verify the recorded deployment before changing source.
+
+External defect: Findings `FAIL: 0` with a note that imported results are counted
+separately. The failure sat under External evaluations: `llms-txt-exists: FAIL`,
+producer `afdocs 0.18.7`. Next: treat it as a recorded external result. There is still
+no check-specific remediation.
+
+Asserted provenance: `DART-OPS-003` PASS with authenticity `ASSERTED` and recommended
+action that the status is not an approval. All three would still obtain a collected or
+imported capture before relying on the claim.
+
+P9 paused once on source-defect because the declared target is `build:page` while the
+missing side is SOURCE. The explainer under Findings resolved that without opening
+JSON. P10 no longer misread that label as "the build is the defect."
+
+### Fourth-set compare and policy
+
+Compatible regression: `CHANGED` `PASS` to `FAIL` and `PASS` to `UNAVAILABLE`; one
+`UNCHANGED`; zero `RESOLVED` or `NEW`. Missing BUILD evidence was not treated as
+resolved. `compare --bundle` printed evidence locations and locator trust. P9 and P10
+noted that the unchanged finding is counted but not named; P9 inferred it is
+`DART-OPS-003` `source:page`.
+
+Incompatible baseline: `Compatible: false`, `INCOMPATIBLE (whole comparison):
+RULE_VERSION_CHANGED`. The current findings in that report were all PASS. Nobody read
+that as a successful baseline comparison or as a new or resolved finding.
+
+Advisory and blocking CI used the same `regression-current` bundle and produced the
+same report identity. Advisory: effect `ADVISORY`, exit 0, `Result: ALLOWED`, with
+three named advisory reasons. Blocking: effect `BLOCKING`, exit 1, `Result: BLOCKED
+(3 blocking policy results)`, with the same three items named as `BLOCKING`. A finding
+is the check result. A regression is a transition. A policy decision is whether that
+result fails CI.
+
+`baseline create` succeeded. P10 recorded that it wrote `sha256:ea04f995…`, matching
+the regression baseline `report_id`. P9 and P10 noted that the command prints a digest
+and no "wrote" sentence.
+
+P10's extra probe paired the live-drift bundle with the regression trusted base and
+read this Policy section: `Effect: INFORMATIONAL`, `Blocking: 0`, `Exit code: 5`,
+`EXIT 5: baseline comparison is incompatible and policy sets incompatible_baseline to
+ERROR`, and `Result: BLOCKED`. That is the previous contradiction, fixed. Pairing the
+incompatible bundle with the regression trusted base exited 0, because that evidence
+matches the reviewed baseline. The confirmation the handoff asked for is not reachable
+from the copy-paste walkthrough.
+
+### Fourth-set terminology and leftover friction
+
+Second-iteration blockers that this revision targeted did not recur: contradictory
+Policy section, `INCOMPATIBLE *`, hash-only `CHANGED` lines, unnamed `Blocking: 3`,
+`No remediation required` beside PASS, `Evidence mode` versus boundary, unlabeled
+bundle digest, raw `EEXIST`, and missing copy-paste for three scenarios.
+
+New residuals recorded in this set:
+
+- Scenario directory names still disclose the expected boundary.
+- `DART-OPS-001` and `DART-OPS-003` still read as internal codes.
+- The imported AFDocs locator remains `at afdocs`.
+- Imported AFDocs failures still have no check-specific next action.
+- The walkthrough does not include `ci` against an incompatible baseline.
+- No fixture demonstrated `NEW`, `RESOLVED`, or `EXTERNAL_CHECK_UNAVAILABLE`.
+- The unchanged finding is counted but not named.
+- `baseline create` prints a bare digest.
+- Policy reason lines escape the arrow as `PASS -\> FAIL`.
+
+### Fourth-set interpretation errors
+
+- No hash was treated as authenticity or lineage.
+- `UNAVAILABLE` was not treated as `RESOLVED`.
+- `INCOMPATIBLE` was not treated as `NEW` or `RESOLVED`.
+- Findings `FAIL: 0` was not treated as a passing imported AFDocs check.
+- Localization was aided by scenario names.
+- P9 hesitated at declared target `build:page` on a SOURCE-boundary failure until the
+  explainer was read.
+- P10 hesitated after incompatible compare because the report names the reason but not
+  an owner next action.
+
+### Fourth-set participant comments
+
+All three would trust the report to decide what to investigate. None would trust a
+`PASS` or missing evidence, by itself, to decide that something is resolved, authentic,
+or ready for an agent.
+
+P8: the reporting fixes landed for this role. The most important remaining improvement
+is a check-specific next action for imported AFDocs failures, or moving that row where
+it cannot be missed if the Findings disclaimer is skipped.
+
+P9: Policy is isolated correctly. The most important remaining improvement is neutral
+scenario identifiers, so localization can be measured without hinting. The remaining
+gap is protocol validity, not the Markdown diagnosis of the defects that were shown.
+
+P10: second-iteration reporting blockers are closed on the documented paths. The most
+important remaining improvement is a copy-paste `ci` pairing that produces exit 5 so
+an on-call engineer can see the Policy reason without inventing a cross-scenario
+trusted-base combination.
+
+### Fourth-set facilitator inference
+
+This section is interpretation, not observed session data.
+
+The two criteria that failed after the second iteration now pass on the documented
+Markdown paths. `compare --bundle` restores locations. `CHANGED` lines and blocking CI
+reasons name the finding. Incompatible compare is readable as
+`INCOMPATIBLE` / `RULE_VERSION_CHANGED`. Nobody treated a hash as authenticity, an
+imported evaluator as an internal finding, or an incompatible baseline as new or
+resolved.
+
+Policy-section exit 5 was confirmed by P10 on a pairing that is not in the walkthrough.
+P8 and P9 correctly treated that handoff item as not run. That is a documentation
+hole, not a remaining reporting bug. The owner close-out that follows this record adds
+a shipped `ci` pairing under `incompatible-baseline/trusted-base`. Practitioners did
+not run that exact command.
+
+The approved thresholds are met with the blinding caveat. The protocol as written is
+complete for the evidence and replay prototype. Completeness does not mean production
+ready, does not prove the product hypothesis, and does not replace the controlled
+comparison study. Task 6 remains only partly answerable because no fixture shows
+`NEW`, `RESOLVED`, or `EXTERNAL_CHECK_UNAVAILABLE`.
+
+Remaining residuals are later work, not another practitioner loop: those missing
+fixtures, neutral scenario identifiers, AFDocs check-specific remediation, naming the
+unchanged finding, labeling `baseline create`, and unescaping the Policy arrow.
+
+### Fourth-set product recommendations
+
+These recommendations follow from the sessions and are recorded for review rather than
+as agreed scope.
+
+1. Add a documented `ci` walkthrough step that produces exit 5 against a shipped
+   trusted base. That is the owner close-out in this change. It is not a new
+   practitioner re-run.
+2. Keep `NEW`, `RESOLVED`, `EXTERNAL_CHECK_UNAVAILABLE`, neutral scenario identifiers,
+   and AFDocs check-specific remediation as later work.
+3. Do not treat this close as authorization for live acquisition, adapters, AI, or
+   more rules.
+
+### Fourth-set session records
+
+- Anonymized participant IDs and roles: P8 technical writer; P9 documentation
+  engineer; P10 DevEx and platform engineer.
+- Dates and revisions: P8 on 2026-09-27 at `86d954ba5868e68e9d8c612e1c07c342a51dd423`;
+  P9 on 2026-09-27 to 2026-09-28 and P10 on 2026-09-28 at
+  `5240261a92c50dbd94c4e384fa2a985688c9b84d`.
+- Fixture order: listed above.
+- Task-level outcomes and timings: listed above.
+- Interpretation errors: listed above.
+- Participant comments: listed above.
+- Facilitator interventions: none during diagnosis.
+- Missing evidence: `NEW`, `RESOLVED`, `EXTERNAL_CHECK_UNAVAILABLE`, and a documented
+  incompatible-baseline `ci` path at session time.
+- Follow-up changes: none applied during the sessions. The walkthrough `ci` pairing
+  is an owner close-out after this record.
+
+## Protocol close
+
+The repository owner approved the threshold table on 2026-09-27. The reporting-fix
+re-run used that table as the bar. Current result: `PROTOCOL_COMPLETE`.
+
+That result means the protocol as written was executed by the three required roles,
+the previously failed criteria now pass on the documented Markdown paths, and the
+approved thresholds are met with the blinding caveat. It does not mean production
+ready, security clean, or that the product hypothesis is proven.
+
+Later work remains: `NEW`, `RESOLVED`, and `EXTERNAL_CHECK_UNAVAILABLE` scenarios,
+neutral scenario identifiers, AFDocs check-specific remediation, and the controlled
+comparison study. Live acquisition remains blocked by its security gate. Do not edit
+this session set or earlier records when those later items are added.
+
+## Owner residual close-out
+
+After the protocol close, the owner addressed four fourth-set residuals that did not
+require another practitioner loop. Session records above are unchanged.
+
+- Compare Markdown now names each `UNCHANGED` finding the same way it names `CHANGED`.
+- `baseline create` prints the output path and a labeled report identity.
+- Policy Markdown restores the toolkit ` -> ` arrow after sanitization, matching
+  compare lines.
+- An incompatible comparison now states the owner next action: do not treat it as a
+  regression; review the named reason; then stop, or create a new reviewed baseline
+  after explicit approval.
+
+This close-out does not claim production readiness.

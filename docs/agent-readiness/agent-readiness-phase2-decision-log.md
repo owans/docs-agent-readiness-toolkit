@@ -62,9 +62,9 @@ remaining uncertainty.
 ## Consequences for Phase 3
 
 The implemented Phase 3 slice contains MVP-0, MVP-1, and Stage 2 recorded AFDocs
-import. The practitioner validation protocol has completed a first pilot, recorded
-separately, with four of its six success criteria unevaluated. The six
-canaries are the acceptance set. Live acquisition remains blocked by its security gate.
+import. The practitioner validation protocol is `PROTOCOL_COMPLETE` for the evidence
+and replay prototype, with the recorded blinding caveat. The six canaries remain the
+acceptance set. Live acquisition remains blocked by its security gate.
 
 ### Phase 3 pre-validation amendments
 
